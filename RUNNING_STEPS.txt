@@ -1,0 +1,37 @@
+DRIVEPRO - QUICK RUNNING STEPS
+================================
+
+1. Install Flutter (stable) and Android Studio.
+2. Open PowerShell in the project folder (the folder containing pubspec.yaml).
+3. Check the environment:
+      flutter doctor -v
+4. Install dependencies:
+      flutter pub get
+5. Confirm Firebase configuration:
+      - Review lib/firebase_options.dart.
+      - Ensure the Firebase project matches the intended school/application.
+      - Enable Firebase Authentication sign-in providers used by this release.
+      - Deploy firestore.rules and required indexes before production use.
+6. Run static analysis:
+      flutter analyze
+7. Run tests:
+      flutter test
+8. Connect an Android phone with USB debugging enabled, or start an emulator.
+9. List devices:
+      flutter devices
+10. Run the app:
+      flutter run
+11. Create a release APK:
+      flutter build apk --release
+12. Find the APK:
+      build/app/outputs/flutter-apk/app-release.apk
+
+IMPORTANT
+- Do not commit real service-account keys, passwords, private tokens, or signing keys.
+- Keep Firebase security rules restrictive; never use open read/write rules in production.
+- Test login, role permissions, student records, attendance, payments, reports, and backup flows
+  with a staging Firebase project before publishing.
+- Store the Android release keystore securely and back it up separately.
+- Run flutter analyze and flutter test again after every code change.
+- The current environment used to prepare this package did not have Flutter/Dart installed;
+  execute the verification commands above on a Flutter development machine before release.

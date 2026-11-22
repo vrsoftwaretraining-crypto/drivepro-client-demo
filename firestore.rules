@@ -1,0 +1,84 @@
+// Developed by @Ramana Code Softwares
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function activeUser() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().active == true;
+    }
+
+    function isAdmin() {
+      return activeUser() && userDoc().role == 'admin';
+    }
+
+    function isInstructor() {
+      return activeUser() && userDoc().role == 'instructor';
+    }
+
+    function isStudent() {
+      return activeUser() && userDoc().role == 'student';
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /students/{studentId} {
+      allow read: if isAdmin() || isInstructor()
+        || (isStudent() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /instructors/{instructorId} {
+      allow read: if activeUser();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if activeUser();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /lessons/{lessonId} {
+      allow read: if isAdmin() || isInstructor()
+        || (isStudent() && resource.data.studentUserId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read: if isAdmin() || isInstructor();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /reminders/{reminderId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /call_enquiries/{enquiryId} {
+      allow read, update: if isAdmin();
+      allow create, delete: if false; // Created by trusted Cloud Functions only.
+    }
+
+    match /school_settings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

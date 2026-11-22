@@ -1,0 +1,18 @@
+# Developed by @Ramana Code Softwares
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.idea/
+.vscode/
+android/local.properties
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+lib/firebase_options.dart
+*.iml
+functions/node_modules/
+functions/lib/
+functions/package-lock.json
