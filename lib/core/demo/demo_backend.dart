@@ -312,6 +312,21 @@ class DemoAuth implements FirebaseAuth {
     yield* _changes.stream;
   }
 
+  /// Select a seeded demo role directly; never calls Firebase Authentication.
+  void selectDemoRole(String role) {
+    final normalized = role.trim().toLowerCase();
+    final entry = <String, String>{
+      'admin': demoAdminEmail,
+      'instructor': demoInstructorEmail,
+      'student': demoStudentEmail,
+    }[normalized];
+    if (entry == null) throw ArgumentError.value(role, 'role', 'Unknown demo role');
+    final uid = DemoBackend.accounts[entry];
+    if (uid == null) throw StateError('Demo account for $normalized was not seeded');
+    _user = DemoUser(uid, entry);
+    _changes.add(_user);
+  }
+
   @override
   Future<UserCredential> signInWithEmailAndPassword({required String email, required String password}) async {
     final mail = email.trim().toLowerCase();

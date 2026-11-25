@@ -98,23 +98,21 @@ class _MessageScreen extends ConsumerWidget {
 
 /// Demo-only role shortcuts. Each button signs into the seeded in-memory account
 /// so the client can inspect all portals without typing credentials.
-class _DemoAccessScreen extends StatelessWidget {
+class _DemoAccessScreen extends ConsumerWidget {
   const _DemoAccessScreen();
 
-  Future<void> _openRole(BuildContext context, String email, String role) async {
-    try {
-      await Backend.auth.signInWithEmailAndPassword(email: email, password: 'demo');
-    } catch (error) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open $role demo: $error')),
-        );
-      }
+  void _openRole(WidgetRef ref, String role) {
+    final auth = Backend.auth;
+    if (auth is! DemoAuth) {
+      throw StateError('Demo authentication backend was not installed.');
     }
+    auth.selectDemoRole(role);
+    ref.invalidate(authStateProvider);
+    ref.invalidate(appUserProvider);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -135,9 +133,9 @@ class _DemoAccessScreen extends StatelessWidget {
                   spacing: 14,
                   runSpacing: 14,
                   children: [
-                    _DemoRoleCard(icon: Icons.admin_panel_settings, title: 'Admin Portal', subtitle: 'Manage the school and view all modules', color: const Color(0xFF1E5AA8), onTap: () => _openRole(context, demoAdminEmail, 'Admin')),
-                    _DemoRoleCard(icon: Icons.school_rounded, title: 'Instructor Portal', subtitle: 'View instructor schedule and students', color: const Color(0xFF18866B), onTap: () => _openRole(context, demoInstructorEmail, 'Instructor')),
-                    _DemoRoleCard(icon: Icons.person_rounded, title: 'Student Portal', subtitle: 'View bookings, progress and payments', color: const Color(0xFF8053B8), onTap: () => _openRole(context, demoStudentEmail, 'Student')),
+                    _DemoRoleCard(icon: Icons.admin_panel_settings, title: 'Admin Portal', subtitle: 'Manage the school and view all modules', color: const Color(0xFF1E5AA8), onTap: () => _openRole(ref, 'admin')),
+                    _DemoRoleCard(icon: Icons.school_rounded, title: 'Instructor Portal', subtitle: 'View instructor schedule and students', color: const Color(0xFF18866B), onTap: () => _openRole(ref, 'instructor')),
+                    _DemoRoleCard(icon: Icons.person_rounded, title: 'Student Portal', subtitle: 'View bookings, progress and payments', color: const Color(0xFF8053B8), onTap: () => _openRole(ref, 'student')),
                     _DemoRoleCard(icon: Icons.public_rounded, title: 'Public Website', subtitle: 'Explore courses, instructors and booking pages', color: const Color(0xFFB26A24), onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PublicLandingPage()))),
                   ],
                 ),
