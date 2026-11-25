@@ -3,7 +3,7 @@
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../core/models/schedule_slot.dart';
 import '../../../core/models/app_user.dart';

@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AppErrorScreen extends StatelessWidget {
   const AppErrorScreen({super.key, this.onRetry});

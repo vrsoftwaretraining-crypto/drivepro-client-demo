@@ -1,7 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
-import 'core/demo/demo_backend.dart';
+import 'package:material_ui/material_ui.dart';
 import 'core/services/backend.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_gate.dart';
@@ -29,16 +28,16 @@ class _DemoBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFFFE9B8),
+    return const Material(
+      color: Color(0xFFFFE9B8),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Text(
             'CLIENT DEMO • Sample data only • Choose Admin, Instructor, Student or Public Website on the start screen. No credentials required.',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF4A3300)),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF4A3300)),
           ),
         ),
       ),

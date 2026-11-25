@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -25,6 +25,8 @@ class LessonsPage extends ConsumerWidget {
     final activeStudents = students.where((item) => item.active).toList();
     final activeInstructors = instructors.where((item) => item.active).toList();
     final activeVehicles = vehicles.where((item) => item.active).toList();
+
+    if (!context.mounted) return;
 
     if (activeStudents.isEmpty ||
         activeInstructors.isEmpty ||
@@ -264,7 +266,6 @@ class LessonsPage extends ConsumerWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final lesson = lessons[index];
-              final isPast = lesson.startAt.isBefore(DateTime.now());
               return Card(
                 child: ListTile(
                   leading:

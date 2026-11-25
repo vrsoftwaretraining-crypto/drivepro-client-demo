@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'slot_board.dart';
 

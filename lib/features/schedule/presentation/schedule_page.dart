@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -221,7 +221,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
             SizedBox(
               width: 200,
               child: DropdownButtonFormField<String>(
-                value: selectedLocation,
+                initialValue: selectedLocation,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Location', isDense: true),
                 items: [
@@ -234,7 +234,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
             SizedBox(
               width: 170,
               child: DropdownButtonFormField<String>(
-                value: _status,
+                initialValue: _status,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Status', isDense: true),
                 items: const [
@@ -359,7 +359,7 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
                             padding: const EdgeInsets.all(9),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: statusColor(slot.status).withOpacity(.55)),
+                              border: Border.all(color: statusColor(slot.status).withValues(alpha: .55)),
                             ),
                             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                               Text(fmtRange(slot), style: const TextStyle(fontWeight: FontWeight.w800)),
@@ -694,14 +694,14 @@ class _SlotFormDialogState extends State<_SlotFormDialog> {
               if (_dateError != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_dateError!, style: const TextStyle(color: Colors.red, fontSize: 12))),
               const SizedBox(height: 14),
               DropdownButtonFormField<int>(
-                value: _duration,
+                initialValue: _duration,
                 decoration: const InputDecoration(labelText: 'Lesson duration'),
                 items: [for (final d in _durations) DropdownMenuItem(value: d, child: Text(fmtDuration(d)))],
                 onChanged: (v) => setState(() => _duration = v ?? 60),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _instructorId,
+                initialValue: _instructorId,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Instructor'),
                 items: [for (final i in _instructors) DropdownMenuItem(value: i.id, child: Text(i.name, overflow: TextOverflow.ellipsis))],
@@ -713,7 +713,7 @@ class _SlotFormDialogState extends State<_SlotFormDialog> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _vehicleId,
+                initialValue: _vehicleId,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Vehicle'),
                 items: [for (final v in _vehicles) DropdownMenuItem(value: v.id, child: Text(_vehicleLabel(v), overflow: TextOverflow.ellipsis))],
@@ -751,7 +751,7 @@ class _SlotFormDialogState extends State<_SlotFormDialog> {
               if (!_editing) ...[
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
-                  value: _repeat,
+                  initialValue: _repeat,
                   decoration: const InputDecoration(labelText: 'Repeat'),
                   items: const [
                     DropdownMenuItem(value: 0, child: Text('Only this day')),

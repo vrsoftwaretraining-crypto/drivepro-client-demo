@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/app_strings.dart';
@@ -292,29 +292,6 @@ class _OverviewPage extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ComingSoonPage extends StatelessWidget {
-  const _ComingSoonPage({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.construction_rounded,
-              size: 52, color: AppTheme.primary,),
-          const SizedBox(height: 12),
-          Text(title, style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 6),
-          const Text('This module is planned for the next development phase.'),
         ],
       ),
     );
