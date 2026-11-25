@@ -101,14 +101,27 @@ class _MessageScreen extends ConsumerWidget {
 class _DemoAccessScreen extends ConsumerWidget {
   const _DemoAccessScreen();
 
-  void _openRole(WidgetRef ref, String role) {
-    final auth = Backend.auth;
-    if (auth is! DemoAuth) {
-      throw StateError('Demo authentication backend was not installed.');
+  Future<void> _openRole(BuildContext context, WidgetRef ref, String role) async {
+    try {
+      // Recover if the page was loaded from an older/cached startup bundle or
+      // the demo backend was not installed before the first portal tap.
+      if (Backend.auth is! DemoAuth) {
+        await DemoBackend.install();
+      }
+      final auth = Backend.auth;
+      if (auth is! DemoAuth) {
+        throw StateError('Demo backend initialization failed. Please refresh the page.');
+      }
+      auth.selectDemoRole(role);
+      ref.invalidate(authStateProvider);
+      ref.invalidate(appUserProvider);
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open demo portal: $error')),
+        );
+      }
     }
-    auth.selectDemoRole(role);
-    ref.invalidate(authStateProvider);
-    ref.invalidate(appUserProvider);
   }
 
   @override
@@ -133,9 +146,9 @@ class _DemoAccessScreen extends ConsumerWidget {
                   spacing: 14,
                   runSpacing: 14,
                   children: [
-                    _DemoRoleCard(icon: Icons.admin_panel_settings, title: 'Admin Portal', subtitle: 'Manage the school and view all modules', color: const Color(0xFF1E5AA8), onTap: () => _openRole(ref, 'admin')),
-                    _DemoRoleCard(icon: Icons.school_rounded, title: 'Instructor Portal', subtitle: 'View instructor schedule and students', color: const Color(0xFF18866B), onTap: () => _openRole(ref, 'instructor')),
-                    _DemoRoleCard(icon: Icons.person_rounded, title: 'Student Portal', subtitle: 'View bookings, progress and payments', color: const Color(0xFF8053B8), onTap: () => _openRole(ref, 'student')),
+                    _DemoRoleCard(icon: Icons.admin_panel_settings, title: 'Admin Portal', subtitle: 'Manage the school and view all modules', color: const Color(0xFF1E5AA8), onTap: () => _openRole(context, ref, 'admin')),
+                    _DemoRoleCard(icon: Icons.school_rounded, title: 'Instructor Portal', subtitle: 'View instructor schedule and students', color: const Color(0xFF18866B), onTap: () => _openRole(context, ref, 'instructor')),
+                    _DemoRoleCard(icon: Icons.person_rounded, title: 'Student Portal', subtitle: 'View bookings, progress and payments', color: const Color(0xFF8053B8), onTap: () => _openRole(context, ref, 'student')),
                     _DemoRoleCard(icon: Icons.public_rounded, title: 'Public Website', subtitle: 'Explore courses, instructors and booking pages', color: const Color(0xFFB26A24), onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PublicLandingPage()))),
                   ],
                 ),

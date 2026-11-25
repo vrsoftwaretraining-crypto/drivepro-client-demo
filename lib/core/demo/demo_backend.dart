@@ -23,8 +23,15 @@ class DemoBackend {
 
   /// Demo sign-in accounts (email -> uid), kept in memory so sign-in never depends on a database query.
   static final Map<String, String> accounts = {};
+  static Future<void>? _installFuture;
 
-  static Future<void> install() async {
+  /// Safe to call from startup and again from a portal button.
+  /// The same in-memory backend instance is installed only once.
+  static Future<void> install() {
+    return _installFuture ??= _installOnce();
+  }
+
+  static Future<void> _installOnce() async {
     final db = FakeFirebaseFirestore();
     // Install the fakes FIRST, so the app can never fall back to the real Firebase in the demo build.
     Backend.useFakes(db, DemoAuth(db));
