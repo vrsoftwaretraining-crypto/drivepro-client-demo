@@ -1,8 +1,9 @@
-name: Build and deploy DrivePro client demo
+﻿name: Build and deploy DrivePro client demo
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -11,50 +12,44 @@ permissions:
   id-token: write
 
 concurrency:
-  group: github-pages-demo
+  group: pages
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      - name: Ensure Flutter web platform exists
-        run: |
-          if [ ! -d web ]; then
-            flutter create . --platforms=web
-          fi
-
-      - name: Install packages
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze Dart source
+      - name: Analyze Flutter project
         run: flutter analyze
 
       - name: Run tests
-        run: flutter test
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test directory found. Skipping tests."
+          fi
 
-      - name: Build database-free demo website
-        env:
-          REPOSITORY_NAME: ${{ github.event.repository.name }}
+      - name: Build Flutter Web Demo
         run: |
           flutter build web --release \
-            --base-href "/${REPOSITORY_NAME}/" \
+            --base-href "/${{ github.event.repository.name }}/" \
             --dart-define=DEMO_MODE=true
-          touch build/web/.nojekyll
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload website artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
@@ -63,9 +58,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     needs: build
+
     steps:
-      - name: Publish demo website
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
