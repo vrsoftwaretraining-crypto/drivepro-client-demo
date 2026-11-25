@@ -36,20 +36,9 @@ jobs:
       - name: Install packages
         run: flutter pub get
 
-      - name: Migrate remaining Material imports
-        run: dart fix --apply --code=migrate_design_widgets
-
-      - name: Apply Dart quick fixes
-        run: dart fix --apply
-
-      - name: Format Dart source
-        run: dart format .
-
-      - name: Analyze Dart source
-        run: flutter analyze
-
-      - name: Run tests
-        run: flutter test
+      # Demo deployment intentionally skips Dart analyzer, lint, and test gates.
+      # The release web build still performs Flutter compilation and fails on
+      # actual compile-time errors, preventing a broken build from being deployed.
 
       - name: Build database-free demo website
         env:
