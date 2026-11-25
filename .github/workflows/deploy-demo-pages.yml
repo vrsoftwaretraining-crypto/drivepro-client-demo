@@ -44,7 +44,7 @@ jobs:
         env:
           REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
-          flutter build web --release \
+          flutter build web --release --no-wasm-dry-run \
             --base-href "/${REPOSITORY_NAME}/" \
             --dart-define=DEMO_MODE=true
           touch build/web/.nojekyll

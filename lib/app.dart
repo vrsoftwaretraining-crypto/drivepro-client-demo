@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'core/services/backend.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_gate.dart';

@@ -1,7 +1,7 @@
 // Developed by @Ramana Code Softwares
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../../../core/models/app_user.dart';
 import '../../auth/presentation/security_questions_form.dart';

@@ -1,6 +1,6 @@
 // Developed by @Ramana Code Softwares
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/models/schedule_slot.dart';
