@@ -318,11 +318,22 @@ class DemoAuth implements FirebaseAuth {
     if (!mail.contains('@')) throw FirebaseAuthException(code: 'invalid-email');
     var uid = DemoBackend.accounts[mail];
     if (uid == null) {
-      // accounts created inside the demo (Admin > create student / instructor login)
-      final found = await _db.collection('users').where('email', isEqualTo: mail).limit(1).get();
-      if (found.docs.isNotEmpty) uid = found.docs.first.id;
+      // Demo-only fallback: role shortcuts must never depend on a password or
+      // on Firebase credentials. Map common portal labels to seeded demo users.
+      if (mail.contains('admin')) {
+        uid = 'admin1';
+      } else if (mail.contains('instructor') || mail.contains('teacher')) {
+        uid = 'ins1';
+      } else if (mail.contains('student') || mail.contains('learner')) {
+        uid = 'stu1';
+      } else {
+        // Accounts created inside the demo (Admin > create student/instructor).
+        final found = await _db.collection('users').where('email', isEqualTo: mail).limit(1).get();
+        if (found.docs.isNotEmpty) uid = found.docs.first.id;
+      }
     }
-    if (uid == null || password.isEmpty) throw FirebaseAuthException(code: 'invalid-credential');
+    // In this isolated demo build the password is intentionally ignored.
+    if (uid == null) throw FirebaseAuthException(code: 'user-not-found');
     _user = DemoUser(uid, mail);
     _changes.add(_user);
     return _DemoCredential(_user!);
