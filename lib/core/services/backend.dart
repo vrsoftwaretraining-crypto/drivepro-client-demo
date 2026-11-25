@@ -6,7 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// Build with  --dart-define=DEMO_MODE=true  to run the whole app with NO Firebase project and NO database.
 /// Every screen works on in-memory sample data (see core/demo/demo_backend.dart); nothing is stored anywhere.
 /// The normal (production) build never sets this flag.
-const demoMode = bool.fromEnvironment('DEMO_MODE');
+// This downloadable client-demo build is ALWAYS isolated from Firebase Authentication.
+// Keep true here so an incorrectly configured GitHub Actions variable cannot enable real login.
+const demoMode = true;
 
 /// Single access point for Firestore and Auth. Production uses the real Firebase instances;
 /// the demo build installs in-memory fakes once at start-up.
