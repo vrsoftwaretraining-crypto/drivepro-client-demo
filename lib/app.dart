@@ -36,8 +36,7 @@ class _DemoBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Text(
-            'DEMO with sample data, nothing is saved. Sign in with any password:  '
-            'Admin: $demoAdminEmail   |   Instructor: $demoInstructorEmail   |   Student: $demoStudentEmail',
+            'CLIENT DEMO • Sample data only • Choose Admin, Instructor, Student or Public Website on the start screen. No credentials required.',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF4A3300)),
           ),

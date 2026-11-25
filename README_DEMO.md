@@ -73,3 +73,7 @@ then sign in as admin > Schedule > Bookings to confirm or cancel it. Student log
 ## Not tested here
 These files were written without Flutter installed, so they were not compiled. If `flutter pub get` or the build
 shows an error, copy the message and send it.
+
+## Passwordless client walkthrough update
+
+In demo mode, the initial screen now offers four shortcuts: Admin Portal, Instructor Portal, Student Portal, and Public Website. Selecting a role automatically signs into the seeded demo account (no username/password entry). Signing out returns to the role selector. Production builds without `DEMO_MODE=true` retain the original authentication flow.

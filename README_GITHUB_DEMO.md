@@ -39,9 +39,9 @@ flutter test
 
 Every push to `main`/`master` rebuilds and updates the demo website. You can also run the workflow manually from Actions → Build and deploy DrivePro client demo → Run workflow.
 
-## 3. Demo logins
+## 3. Passwordless demo access
 
-Use the sign-in page and choose the matching role. Any non-empty password is accepted for the seeded demo accounts.
+The demo opens a role selector with direct buttons for Admin Portal, Instructor Portal, Student Portal, and Public Website. Clicking a role automatically enters the corresponding seeded demo account—no email or password entry is required. Sign out to return to the role selector. The public website can be explored separately from the role portals.
 
 | Role | Email / username |
 |---|---|
