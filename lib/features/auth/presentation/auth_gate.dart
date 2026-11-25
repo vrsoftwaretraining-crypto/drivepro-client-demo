@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/auth_providers.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
-import 'login_page.dart';
+import 'account_setup_page.dart';
+import 'public_landing_page.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
@@ -19,7 +20,7 @@ class AuthGate extends ConsumerWidget {
       error: (error, stack) =>
           _MessageScreen(message: 'Authentication error: $error'),
       data: (user) {
-        if (user == null) return const LoginPage();
+        if (user == null) return const PublicLandingPage();
 
         final profile = ref.watch(appUserProvider);
         return profile.when(
@@ -27,12 +28,18 @@ class AuthGate extends ConsumerWidget {
           error: (error, stack) =>
               _MessageScreen(message: 'Profile error: $error'),
           data: (appUser) {
-            if (appUser == null || !appUser.active) {
+            if (appUser == null || !appUser.active ||
+                !const ['admin', 'instructor', 'student'].contains(appUser.role)) {
               return const _MessageScreen(
                 message:
-                    'Your account profile is not active. Please contact your school administrator.',
+                    'Your account profile is inactive or has an unsupported role. Please contact your school administrator.',
                 allowSignOut: true,
               );
+            }
+            final skipped = ref.watch(setupSkippedProvider);
+            if (appUser.needsSetup &&
+                (appUser.mustChangePassword || !skipped.contains(appUser.uid))) {
+              return AccountSetupPage(user: appUser);
             }
             return DashboardPage(user: appUser);
           },

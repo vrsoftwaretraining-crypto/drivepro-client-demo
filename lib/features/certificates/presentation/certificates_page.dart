@@ -26,22 +26,22 @@ class CertificatesPage extends ConsumerWidget {
               students.where((student) => student.active).toList();
           if (activeStudents.isEmpty) {
             return const Center(
-                child: Text('No active students available for certificates.'));
+                child: Text('No active students available for certificates.'),);
           }
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
               Text('Student certificates',
-                  style: Theme.of(context).textTheme.headlineSmall),
+                  style: Theme.of(context).textTheme.headlineSmall,),
               const SizedBox(height: 8),
               const Text(
-                  'Generate a printable course completion certificate for an active student. Verify course completion before issuing.'),
+                  'Generate a printable course completion certificate for an active student. Verify course completion before issuing.',),
               const SizedBox(height: 16),
               ...activeStudents.map(
                 (student) => Card(
                   child: ListTile(
                     leading: const CircleAvatar(
-                        child: Icon(Icons.workspace_premium_outlined)),
+                        child: Icon(Icons.workspace_premium_outlined),),
                     title: Text(student.name),
                     subtitle: Text('${student.course} • ${student.phone}'),
                     trailing: IconButton(
@@ -75,30 +75,30 @@ class CertificatesPage extends ConsumerWidget {
             mainAxisAlignment: pw.MainAxisAlignment.center,
             children: [
               pw.Text('DRIVING SCHOOL',
-                  style: pw.TextStyle(
+                  style: const pw.TextStyle(
                       fontSize: 14,
                       letterSpacing: 3,
-                      color: PdfColors.blueGrey)),
+                      color: PdfColors.blueGrey,),),
               pw.SizedBox(height: 18),
               pw.Text('CERTIFICATE OF COMPLETION',
                   style: pw.TextStyle(
                       fontSize: 28,
                       fontWeight: pw.FontWeight.bold,
-                      color: PdfColors.indigo)),
+                      color: PdfColors.indigo,),),
               pw.SizedBox(height: 30),
               pw.Text('This is to certify that',
-                  style: const pw.TextStyle(fontSize: 16)),
+                  style: const pw.TextStyle(fontSize: 16),),
               pw.SizedBox(height: 12),
               pw.Text(student.name,
                   style: pw.TextStyle(
-                      fontSize: 30, fontWeight: pw.FontWeight.bold)),
+                      fontSize: 30, fontWeight: pw.FontWeight.bold,),),
               pw.SizedBox(height: 12),
               pw.Text('has completed the training course: ${student.course}',
                   textAlign: pw.TextAlign.center,
-                  style: const pw.TextStyle(fontSize: 17)),
+                  style: const pw.TextStyle(fontSize: 17),),
               pw.SizedBox(height: 28),
               pw.Text('Issued on $issueDate',
-                  style: const pw.TextStyle(fontSize: 12)),
+                  style: const pw.TextStyle(fontSize: 12),),
               pw.Spacer(),
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -106,13 +106,13 @@ class CertificatesPage extends ConsumerWidget {
                   pw.Column(children: [
                     pw.Container(width: 150, height: 1, color: PdfColors.black),
                     pw.SizedBox(height: 6),
-                    pw.Text('Instructor signature')
-                  ]),
+                    pw.Text('Instructor signature'),
+                  ],),
                   pw.Column(children: [
                     pw.Container(width: 150, height: 1, color: PdfColors.black),
                     pw.SizedBox(height: 6),
-                    pw.Text('Authorized signature')
-                  ]),
+                    pw.Text('Authorized signature'),
+                  ],),
                 ],
               ),
             ],
@@ -125,7 +125,7 @@ class CertificatesPage extends ConsumerWidget {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Certificate export failed: $error')));
+            SnackBar(content: Text('Certificate export failed: $error')),);
       }
     }
   }

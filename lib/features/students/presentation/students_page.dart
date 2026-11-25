@@ -190,7 +190,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                                     DataCell(Text(_money(student.paidFee))),
                                     DataCell(Text(_money(student.pendingFee))),
                                     DataCell(
-                                        _StatusChip(active: student.active)),
+                                        _StatusChip(active: student.active),),
                                     DataCell(
                                       isAdmin
                                           ? Row(
@@ -200,14 +200,14 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                                                   onPressed: () =>
                                                       _editStudent(student),
                                                   icon: const Icon(
-                                                      Icons.edit_outlined),
+                                                      Icons.edit_outlined,),
                                                 ),
                                                 IconButton(
                                                   tooltip: 'Archive',
                                                   onPressed: () =>
                                                       _archiveStudent(student),
                                                   icon: const Icon(
-                                                      Icons.archive_outlined),
+                                                      Icons.archive_outlined,),
                                                 ),
                                               ],
                                             )
@@ -261,7 +261,7 @@ class _StudentCard extends StatelessWidget {
               Text(student.name.isEmpty ? '?' : student.name[0].toUpperCase()),
         ),
         title: Text(student.name,
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontWeight: FontWeight.w700),),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 6),
           child: Text(

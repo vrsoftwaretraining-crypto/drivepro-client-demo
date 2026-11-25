@@ -11,16 +11,17 @@ class PaymentRepository {
       .orderBy('paidAt', descending: true)
       .snapshots()
       .map((s) =>
-          s.docs.map((d) => FeePayment.fromMap(d.id, d.data())).toList());
+          s.docs.map((d) => FeePayment.fromMap(d.id, d.data())).toList(),);
   Future<void> record(
       {required String studentId,
       required String studentName,
       required double amount,
       required String method,
       required String receiptNo,
-      required String notes}) async {
-    if (amount <= 0)
+      required String notes,}) async {
+    if (amount <= 0) {
       throw ArgumentError('Payment amount must be greater than zero.');
+    }
     final student = db.collection('students').doc(studentId);
     final payment = db.collection('payments').doc();
     await db.runTransaction((tx) async {
@@ -29,11 +30,12 @@ class PaymentRepository {
       final data = snap.data()!;
       final total = (data['totalFee'] as num?)?.toDouble() ?? 0;
       final paid = (data['paidFee'] as num?)?.toDouble() ?? 0;
-      if (amount > total - paid + 0.000001)
+      if (amount > total - paid + 0.000001) {
         throw StateError('Payment exceeds pending fee.');
+      }
       tx.update(student, {
         'paidFee': paid + amount,
-        'updatedAt': FieldValue.serverTimestamp()
+        'updatedAt': FieldValue.serverTimestamp(),
       });
       tx.set(payment, {
         'studentId': studentId,
@@ -43,7 +45,7 @@ class PaymentRepository {
         'receiptNo': receiptNo,
         'notes': notes.trim(),
         'paidAt': Timestamp.now(),
-        'createdAt': FieldValue.serverTimestamp()
+        'createdAt': FieldValue.serverTimestamp(),
       });
     });
   }

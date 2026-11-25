@@ -19,27 +19,41 @@ class AttendancePage extends ConsumerWidget {
             padding: const EdgeInsets.all(20),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(
-                    child: Text('Lesson attendance',
-                        style: Theme.of(context).textTheme.headlineSmall)),
-                FilledButton.icon(
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                runSpacing: 12,
+                spacing: 12,
+                children: [
+                  Text('Lesson attendance', style: Theme.of(context).textTheme.headlineSmall),
+                  FilledButton.icon(
                     onPressed: () => lessons.when(
-                        data: (items) => showDialog(
-                            context: context,
-                            builder: (_) => _AttendanceDialog(lessons: items)),
-                        error: (e, _) => ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('$e'))),
-                        loading: () => null),
+                      data: (items) {
+                        if (items.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Create a lesson before marking attendance.')),
+                          );
+                          return;
+                        }
+                        showDialog<void>(
+                          context: context,
+                          builder: (_) => _AttendanceDialog(lessons: items),
+                        );
+                      },
+                      error: (e, _) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e'))),
+                      loading: () {},
+                    ),
                     icon: const Icon(Icons.fact_check),
-                    label: const Text('Mark attendance'))
-              ]),
+                    label: const Text('Mark attendance'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
               Expanded(
                   child: records.when(
                       data: (items) => items.isEmpty
                           ? const Center(
-                              child: Text('No attendance records yet.'))
+                              child: Text('No attendance records yet.'),)
                           : ListView.separated(
                               itemCount: items.length,
                               separatorBuilder: (_, __) => const Divider(),
@@ -54,16 +68,16 @@ class AttendancePage extends ConsumerWidget {
                                     leading: Icon(Icons.person, color: color),
                                     title: Text(a.studentName),
                                     subtitle: Text(
-                                        '${DateFormat.yMMMd().add_jm().format(a.lessonAt)} • ${a.instructorName}'),
+                                        '${DateFormat.yMMMd().add_jm().format(a.lessonAt)} • ${a.instructorName}',),
                                     trailing: Chip(
                                         label: Text(a.status.toUpperCase()),
-                                        side: BorderSide(color: color)));
-                              }),
+                                        side: BorderSide(color: color),),);
+                              },),
                       error: (e, _) =>
                           Center(child: Text('Could not load attendance: $e')),
                       loading: () =>
-                          const Center(child: CircularProgressIndicator())))
-            ])));
+                          const Center(child: CircularProgressIndicator()),),),
+            ],),),);
   }
 }
 
@@ -95,44 +109,79 @@ class _AttendanceDialogState extends ConsumerState<_AttendanceDialog> {
   @override
   Widget build(BuildContext context) {
     final lesson = _selectedLesson;
+    final size = MediaQuery.sizeOf(context);
     return AlertDialog(
-        title: const Text('Mark attendance'),
-        content: SizedBox(
-            width: 420,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              DropdownButtonFormField<String>(
+      title: const Text('Mark lesson attendance'),
+      content: SizedBox(
+        width: 440,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: size.height * 0.62),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Select the lesson and record the student status.'),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
                   initialValue: lessonId,
-                  decoration: const InputDecoration(labelText: 'Lesson'),
-                  items: widget.lessons
-                      .map((l) => DropdownMenuItem(
-                          value: l.id,
-                          child: Text(
-                              '${l.studentName} • ${DateFormat.yMMMd().add_jm().format(l.startAt)}',
-                              overflow: TextOverflow.ellipsis)))
-                      .toList(),
-                  onChanged: (v) => setState(() => lessonId = v)),
-              DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: 'Lesson', border: OutlineInputBorder()),
+                  items: widget.lessons.map((l) => DropdownMenuItem(
+                    value: l.id,
+                    child: Text(
+                      '${l.studentName} • ${DateFormat.yMMMd().add_jm().format(l.startAt)}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  )).toList(),
+                  onChanged: (value) => setState(() => lessonId = value),
+                ),
+                const SizedBox(height: 14),
+                DropdownButtonFormField<String>(
                   initialValue: status,
-                  decoration: const InputDecoration(labelText: 'Status'),
-                  items: const ['present', 'absent', 'late']
-                      .map((v) => DropdownMenuItem(
-                          value: v, child: Text(v.toUpperCase())))
-                      .toList(),
-                  onChanged: (v) => setState(() => status = v ?? 'present')),
-              TextField(
+                  decoration: const InputDecoration(labelText: 'Attendance status', border: OutlineInputBorder()),
+                  items: const [
+                    DropdownMenuItem(value: 'present', child: Text('Present')),
+                    DropdownMenuItem(value: 'late', child: Text('Late')),
+                    DropdownMenuItem(value: 'absent', child: Text('Absent')),
+                  ],
+                  onChanged: (value) => setState(() => status = value ?? 'present'),
+                ),
+                const SizedBox(height: 14),
+                TextField(
                   controller: notes,
-                  decoration: const InputDecoration(labelText: 'Notes'))
-            ])),
-        actions: [
-          TextButton(
-              onPressed: saving ? null : () => Navigator.pop(context),
-              child: const Text('Cancel')),
-          FilledButton(
-              onPressed: saving || lesson == null ? null : _save,
-              child: saving
-                  ? const CircularProgressIndicator()
-                  : const Text('Save'))
-        ]);
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: const InputDecoration(labelText: 'Notes (optional)', border: OutlineInputBorder(), alignLabelWithHint: true),
+                ),
+                if (lesson != null) ...[
+                  const SizedBox(height: 14),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(lesson.studentName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 4),
+                        Text('${lesson.instructorName} • ${lesson.vehicleRegistration}'),
+                        Text(DateFormat.yMMMMd().add_jm().format(lesson.startAt)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: saving ? null : () => Navigator.pop(context), child: const Text('Cancel')),
+        FilledButton.icon(
+          onPressed: saving || lesson == null ? null : _save,
+          icon: saving ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.save_outlined),
+          label: const Text('Save attendance'),
+        ),
+      ],
+    );
   }
 
   Future<void> _save() async {
@@ -148,12 +197,15 @@ class _AttendanceDialogState extends ConsumerState<_AttendanceDialog> {
           instructorName: l.instructorName,
           lessonAt: l.startAt,
           status: status,
-          notes: notes.text));
+          notes: notes.text,
+          studentUserId: l.studentUserId.isNotEmpty ? l.studentUserId : l.studentId,
+          instructorUserId: l.instructorUserId.isNotEmpty ? l.instructorUserId : l.instructorId,),);
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('$e')));
+      }
     } finally {
       if (mounted) setState(() => saving = false);
     }

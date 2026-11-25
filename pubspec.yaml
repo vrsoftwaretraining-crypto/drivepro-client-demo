@@ -16,6 +16,7 @@ dependencies:
   firebase_auth: ^5.7.0
   cloud_firestore: ^5.6.12
   firebase_storage: ^12.4.10
+  fake_cloud_firestore: ^3.1.0 # demo build only (in-memory sample data); not used by the normal build
   flutter_riverpod: ^2.6.1
   go_router: ^16.2.1
   google_fonts: ^6.3.0
@@ -24,6 +25,8 @@ dependencies:
   file_saver: ^0.2.14
   pdf: ^3.11.3
   printing: ^5.14.2
+  url_launcher: ^6.3.1
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:

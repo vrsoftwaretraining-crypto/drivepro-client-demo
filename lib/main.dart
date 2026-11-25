@@ -5,12 +5,14 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'core/errors/startup_error_app.dart';
 import 'core/logging/app_logger.dart';
+import 'core/demo/demo_backend.dart';
+import 'core/services/backend.dart';
+import 'core/services/emulator.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -38,11 +40,19 @@ Future<void> main() async {
     };
 
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      if (demoMode) {
+        // Demo build: no Firebase project, no database. Sample data lives in memory only.
+        await DemoBackend.install();
+        AppLogger.info('Demo mode: in-memory sample data installed');
+      } else {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
 
-      AppLogger.info('Firebase initialized successfully');
+        connectEmulators(Firebase.app());
+
+        AppLogger.info('Firebase initialized successfully');
+      }
 
       runApp(
         const ProviderScope(

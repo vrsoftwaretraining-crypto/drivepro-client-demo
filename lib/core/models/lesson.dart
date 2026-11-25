@@ -15,6 +15,8 @@ class DrivingLesson {
     required this.durationMinutes,
     this.notes = '',
     this.status = 'scheduled',
+    this.studentUserId = '',
+    this.instructorUserId = '',
   });
 
   final String id;
@@ -28,6 +30,8 @@ class DrivingLesson {
   final int durationMinutes;
   final String notes;
   final String status;
+  final String studentUserId;
+  final String instructorUserId;
 
   factory DrivingLesson.fromMap(String id, Map<String, dynamic> map) {
     final timestamp = map['startAt'] as Timestamp?;
@@ -43,6 +47,8 @@ class DrivingLesson {
       durationMinutes: (map['durationMinutes'] as num?)?.toInt() ?? 60,
       notes: map['notes'] as String? ?? '',
       status: map['status'] as String? ?? 'scheduled',
+      studentUserId: map['studentUserId'] as String? ?? '',
+      instructorUserId: map['instructorUserId'] as String? ?? '',
     );
   }
 
@@ -57,6 +63,8 @@ class DrivingLesson {
         'durationMinutes': durationMinutes,
         'notes': notes.trim(),
         'status': status,
+        'studentUserId': studentUserId,
+        'instructorUserId': instructorUserId,
         'updatedAt': FieldValue.serverTimestamp(),
       };
 }

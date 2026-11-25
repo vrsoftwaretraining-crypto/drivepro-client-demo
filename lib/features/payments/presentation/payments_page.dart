@@ -21,7 +21,7 @@ class PaymentsPage extends ConsumerWidget {
               Row(children: [
                 Expanded(
                     child: Text('Fee payments',
-                        style: Theme.of(context).textTheme.headlineSmall)),
+                        style: Theme.of(context).textTheme.headlineSmall,),),
                 FilledButton.icon(
                     onPressed: () => students.when(
                         data: (items) => showDialog(
@@ -29,18 +29,18 @@ class PaymentsPage extends ConsumerWidget {
                             builder: (_) => _PaymentDialog(
                                 students: items
                                     .where((s) => s.active && s.pendingFee > 0)
-                                    .toList())),
+                                    .toList(),),),
                         error: (e, _) => _error(context, e),
-                        loading: () => null),
+                        loading: () {},),
                     icon: const Icon(Icons.add),
-                    label: const Text('Record payment'))
-              ]),
+                    label: const Text('Record payment'),),
+              ],),
               const SizedBox(height: 12),
               Expanded(
                   child: payments.when(
                       data: (items) => items.isEmpty
                           ? const Center(
-                              child: Text('No payments recorded yet.'))
+                              child: Text('No payments recorded yet.'),)
                           : ListView.separated(
                               itemCount: items.length,
                               separatorBuilder: (_, __) => const Divider(),
@@ -48,20 +48,20 @@ class PaymentsPage extends ConsumerWidget {
                                 final p = items[i];
                                 return ListTile(
                                     leading: const CircleAvatar(
-                                        child: Icon(Icons.receipt_long)),
+                                        child: Icon(Icons.receipt_long),),
                                     title: Text(p.studentName),
                                     subtitle: Text(
-                                        '${p.receiptNo} • ${p.method.toUpperCase()} • ${DateFormat.yMMMd().format(p.paidAt)}'),
+                                        '${p.receiptNo} • ${p.method.toUpperCase()} • ${DateFormat.yMMMd().format(p.paidAt)}',),
                                     trailing: Text(
                                         '₹${p.amount.toStringAsFixed(2)}',
                                         style: const TextStyle(
-                                            fontWeight: FontWeight.bold)));
-                              }),
+                                            fontWeight: FontWeight.bold,),),);
+                              },),
                       error: (e, _) =>
                           Center(child: Text('Could not load payments: $e')),
                       loading: () =>
-                          const Center(child: CircularProgressIndicator())))
-            ])));
+                          const Center(child: CircularProgressIndicator()),),),
+            ],),),);
   }
 
   void _error(BuildContext context, Object e) => ScaffoldMessenger.of(context)
@@ -113,9 +113,9 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
                       .map((s) => DropdownMenuItem(
                           value: s.id,
                           child: Text(
-                              '${s.name} • Pending ₹${s.pendingFee.toStringAsFixed(0)}')))
+                              '${s.name} • Pending ₹${s.pendingFee.toStringAsFixed(0)}',),),)
                       .toList(),
-                  onChanged: (v) => setState(() => studentId = v)),
+                  onChanged: (v) => setState(() => studentId = v),),
               TextField(
                   controller: amount,
                   keyboardType:
@@ -124,7 +124,7 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
                       labelText: 'Amount',
                       helperText: selected == null
                           ? null
-                          : 'Pending: ₹${selected.pendingFee.toStringAsFixed(2)}')),
+                          : 'Pending: ₹${selected.pendingFee.toStringAsFixed(2)}',),),
               DropdownButtonFormField<String>(
                   initialValue: method,
                   decoration:
@@ -134,33 +134,33 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
                     'upi',
                     'card',
                     'bank transfer',
-                    'cheque'
+                    'cheque',
                   ]
                       .map((v) => DropdownMenuItem(
-                          value: v, child: Text(v.toUpperCase())))
+                          value: v, child: Text(v.toUpperCase()),),)
                       .toList(),
-                  onChanged: (v) => setState(() => method = v ?? 'cash')),
+                  onChanged: (v) => setState(() => method = v ?? 'cash'),),
               TextField(
                   controller: receipt,
                   decoration:
-                      const InputDecoration(labelText: 'Receipt number')),
+                      const InputDecoration(labelText: 'Receipt number'),),
               TextField(
                   controller: notes,
-                  decoration: const InputDecoration(labelText: 'Notes'))
-            ]))),
+                  decoration: const InputDecoration(labelText: 'Notes'),),
+            ],),),),
         actions: [
           TextButton(
               onPressed: saving ? null : () => Navigator.pop(context),
-              child: const Text('Cancel')),
+              child: const Text('Cancel'),),
           FilledButton(
               onPressed: saving ? null : _save,
               child: saving
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Save'))
-        ]);
+                      child: CircularProgressIndicator(strokeWidth: 2),)
+                  : const Text('Save'),),
+        ],);
   }
 
   Future<void> _save() async {
@@ -168,7 +168,7 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
     final value = double.tryParse(amount.text.trim());
     if (s == null || value == null || value <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Select a student and enter a valid amount.')));
+          content: Text('Select a student and enter a valid amount.'),),);
       return;
     }
     setState(() => saving = true);
@@ -179,12 +179,13 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
           amount: value,
           method: method,
           receiptNo: receipt.text.trim(),
-          notes: notes.text);
+          notes: notes.text,);
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => saving = false);
     }

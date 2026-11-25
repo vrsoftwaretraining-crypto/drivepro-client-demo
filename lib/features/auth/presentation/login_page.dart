@@ -50,7 +50,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             'user-disabled' => 'This account has been disabled.',
             'too-many-requests' => 'Too many attempts. Try again later.',
             _ => error.message ?? 'Unable to sign in.',
-          });
+          },);
     } catch (_) {
       setState(() => _error = 'Something went wrong. Please try again.');
     } finally {
@@ -106,8 +106,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           if (value == null || value.trim().isEmpty) {
                             return 'Email is required.';
                           }
-                          if (!value.contains('@'))
+                          if (!value.contains('@')) {
                             return 'Enter a valid email.';
+                          }
                           return null;
                         },
                       ),

@@ -30,16 +30,16 @@ class ReportsPage extends ConsumerWidget {
                 data: (ss) => payments.when(
                     data: (ps) => attendance.when(
                         data: (ats) => _ReportContent(
-                            students: ss, payments: ps, attendance: ats),
+                            students: ss, payments: ps, attendance: ats,),
                         error: (e, _) => _err(e),
                         loading: () =>
-                            const Center(child: CircularProgressIndicator())),
+                            const Center(child: CircularProgressIndicator()),),
                     error: (e, _) => _err(e),
                     loading: () =>
-                        const Center(child: CircularProgressIndicator())),
+                        const Center(child: CircularProgressIndicator()),),
                 error: (e, _) => _err(e),
                 loading: () =>
-                    const Center(child: CircularProgressIndicator()))));
+                    const Center(child: CircularProgressIndicator()),),),);
   }
 
   Widget _err(Object e) =>
@@ -50,7 +50,7 @@ class _ReportContent extends StatelessWidget {
   const _ReportContent(
       {required this.students,
       required this.payments,
-      required this.attendance});
+      required this.attendance,});
   final List<Student> students;
   final List<FeePayment> payments;
   final List<LessonAttendance> attendance;
@@ -73,8 +73,8 @@ class _ReportContent extends StatelessWidget {
         _metric('Pending', '₹${pending.toStringAsFixed(0)}'),
         _metric('This month', '₹${monthPayments.toStringAsFixed(0)}'),
         _metric('Students', '${students.length}'),
-        _metric('Present lessons', '$present / ${attendance.length}')
-      ]),
+        _metric('Present lessons', '$present / ${attendance.length}'),
+      ],),
       const SizedBox(height: 24),
       Card(
           child: Padding(
@@ -83,30 +83,30 @@ class _ReportContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Export reports',
-                        style: Theme.of(context).textTheme.titleLarge),
+                        style: Theme.of(context).textTheme.titleLarge,),
                     const SizedBox(height: 8),
                     const Text(
-                        'Export student fee balances, payment transactions and lesson attendance.'),
+                        'Export student fee balances, payment transactions and lesson attendance.',),
                     const SizedBox(height: 16),
                     Wrap(spacing: 12, runSpacing: 12, children: [
                       FilledButton.icon(
                           onPressed: () => _exportExcel(context),
                           icon: const Icon(Icons.table_view),
-                          label: const Text('Export Excel (.xlsx)')),
+                          label: const Text('Export Excel (.xlsx)'),),
                       OutlinedButton.icon(
                           onPressed: () => _exportPdf(context),
                           icon: const Icon(Icons.picture_as_pdf),
-                          label: const Text('Print / Save PDF'))
-                    ])
-                  ]))),
+                          label: const Text('Print / Save PDF'),),
+                    ],),
+                  ],),),),
       const SizedBox(height: 16),
       Text('Fee balances', style: Theme.of(context).textTheme.titleLarge),
       ...students.map((s) => ListTile(
           dense: true,
           title: Text(s.name),
           subtitle: Text(s.course),
-          trailing: Text('₹${s.pendingFee.toStringAsFixed(0)} pending')))
-    ]);
+          trailing: Text('₹${s.pendingFee.toStringAsFixed(0)} pending'),),),
+    ],);
   }
 
   Widget _metric(String label, String value) => SizedBox(
@@ -121,8 +121,8 @@ class _ReportContent extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(value,
                         style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold))
-                  ]))));
+                            fontSize: 20, fontWeight: FontWeight.bold,),),
+                  ],),),),);
   Future<void> _exportExcel(BuildContext context) async {
     try {
       final book = Excel.createExcel();
@@ -132,7 +132,7 @@ class _ReportContent extends StatelessWidget {
         TextCellValue('Course'),
         TextCellValue('Total Fee'),
         TextCellValue('Paid'),
-        TextCellValue('Pending')
+        TextCellValue('Pending'),
       ]);
       for (final s in students) {
         fees.appendRow([
@@ -140,7 +140,7 @@ class _ReportContent extends StatelessWidget {
           TextCellValue(s.course),
           DoubleCellValue(s.totalFee),
           DoubleCellValue(s.paidFee),
-          DoubleCellValue(s.pendingFee)
+          DoubleCellValue(s.pendingFee),
         ]);
       }
       final tx = book['Payments'];
@@ -149,7 +149,7 @@ class _ReportContent extends StatelessWidget {
         TextCellValue('Student'),
         TextCellValue('Receipt'),
         TextCellValue('Method'),
-        TextCellValue('Amount')
+        TextCellValue('Amount'),
       ]);
       for (final p in payments) {
         tx.appendRow([
@@ -157,7 +157,7 @@ class _ReportContent extends StatelessWidget {
           TextCellValue(p.studentName),
           TextCellValue(p.receiptNo),
           TextCellValue(p.method),
-          DoubleCellValue(p.amount)
+          DoubleCellValue(p.amount),
         ]);
       }
       final att = book['Attendance'];
@@ -165,14 +165,14 @@ class _ReportContent extends StatelessWidget {
         TextCellValue('Date'),
         TextCellValue('Student'),
         TextCellValue('Instructor'),
-        TextCellValue('Status')
+        TextCellValue('Status'),
       ]);
       for (final a in attendance) {
         att.appendRow([
           TextCellValue(DateFormat.yMd().format(a.lessonAt)),
           TextCellValue(a.studentName),
           TextCellValue(a.instructorName),
-          TextCellValue(a.status)
+          TextCellValue(a.status),
         ]);
       }
       final bytes = book.encode();
@@ -182,14 +182,16 @@ class _ReportContent extends StatelessWidget {
               'DrivePro_Report_${DateFormat('yyyyMMdd').format(DateTime.now())}',
           bytes: Uint8List.fromList(bytes),
           ext: 'xlsx',
-          mimeType: MimeType.microsoftExcel);
-      if (context.mounted)
+          mimeType: MimeType.microsoftExcel,);
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Excel report exported.')));
+            const SnackBar(content: Text('Excel report exported.')),);
+      }
     } catch (e) {
-      if (context.mounted)
+      if (context.mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Excel export failed: $e')));
+      }
     }
   }
 
@@ -200,14 +202,14 @@ class _ReportContent extends StatelessWidget {
         build: (ctx) => [
               pw.Text('DrivePro - Driving School Report',
                   style: pw.TextStyle(
-                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                      fontSize: 20, fontWeight: pw.FontWeight.bold,),),
               pw.SizedBox(height: 8),
               pw.Text(
-                  'Generated: ${DateFormat.yMMMd().format(DateTime.now())}'),
+                  'Generated: ${DateFormat.yMMMd().format(DateTime.now())}',),
               pw.SizedBox(height: 16),
               pw.Text('Fee summary',
                   style: pw.TextStyle(
-                      fontSize: 15, fontWeight: pw.FontWeight.bold)),
+                      fontSize: 15, fontWeight: pw.FontWeight.bold,),),
               pw.TableHelper.fromTextArray(
                   headers: ['Student', 'Course', 'Total', 'Paid', 'Pending'],
                   data: students
@@ -216,13 +218,13 @@ class _ReportContent extends StatelessWidget {
                             s.course,
                             s.totalFee.toStringAsFixed(0),
                             s.paidFee.toStringAsFixed(0),
-                            s.pendingFee.toStringAsFixed(0)
-                          ])
-                      .toList()),
+                            s.pendingFee.toStringAsFixed(0),
+                          ],)
+                      .toList(),),
               pw.SizedBox(height: 16),
               pw.Text('Payment transactions',
                   style: pw.TextStyle(
-                      fontSize: 15, fontWeight: pw.FontWeight.bold)),
+                      fontSize: 15, fontWeight: pw.FontWeight.bold,),),
               pw.TableHelper.fromTextArray(
                   headers: ['Date', 'Student', 'Receipt', 'Method', 'Amount'],
                   data: payments
@@ -231,13 +233,13 @@ class _ReportContent extends StatelessWidget {
                             p.studentName,
                             p.receiptNo,
                             p.method,
-                            p.amount.toStringAsFixed(2)
-                          ])
-                      .toList()),
+                            p.amount.toStringAsFixed(2),
+                          ],)
+                      .toList(),),
               pw.SizedBox(height: 16),
               pw.Text('Lesson attendance',
                   style: pw.TextStyle(
-                      fontSize: 15, fontWeight: pw.FontWeight.bold)),
+                      fontSize: 15, fontWeight: pw.FontWeight.bold,),),
               pw.TableHelper.fromTextArray(
                   headers: ['Date', 'Student', 'Instructor', 'Status'],
                   data: attendance
@@ -245,10 +247,10 @@ class _ReportContent extends StatelessWidget {
                             DateFormat.yMd().format(a.lessonAt),
                             a.studentName,
                             a.instructorName,
-                            a.status
-                          ])
-                      .toList())
-            ]));
+                            a.status,
+                          ],)
+                      .toList(),),
+            ],),);
     await Printing.layoutPdf(onLayout: (PdfPageFormat format) => doc.save());
   }
 }

@@ -11,6 +11,7 @@ class SchoolVehicle {
     this.fuelType = 'Petrol',
     this.insuranceExpiry,
     this.fcExpiry,
+    this.photoUrl = '',
     this.active = true,
   });
 
@@ -21,6 +22,7 @@ class SchoolVehicle {
   final String fuelType;
   final DateTime? insuranceExpiry;
   final DateTime? fcExpiry;
+  final String photoUrl;
   final bool active;
 
   factory SchoolVehicle.fromMap(String id, Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class SchoolVehicle {
       fuelType: map['fuelType'] as String? ?? 'Petrol',
       insuranceExpiry: dateFrom(map['insuranceExpiry']),
       fcExpiry: dateFrom(map['fcExpiry']),
+      photoUrl: map['photoUrl'] as String? ?? '',
       active: map['active'] as bool? ?? true,
     );
   }
@@ -50,6 +53,7 @@ class SchoolVehicle {
             ? null
             : Timestamp.fromDate(insuranceExpiry!),
         'fcExpiry': fcExpiry == null ? null : Timestamp.fromDate(fcExpiry!),
+        'photoUrl': photoUrl.trim(),
         'active': active,
         'updatedAt': FieldValue.serverTimestamp(),
       };

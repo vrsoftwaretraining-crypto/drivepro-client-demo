@@ -7,6 +7,9 @@ class AppUser {
     required this.email,
     required this.role,
     required this.active,
+    this.username = '',
+    this.mustChangePassword = false,
+    this.securityQuestionsSet = false,
   });
 
   final String uid;
@@ -14,8 +17,12 @@ class AppUser {
   final String email;
   final String role;
   final bool active;
+  final String username;
+  final bool mustChangePassword;
+  final bool securityQuestionsSet;
 
   bool get isAdmin => role == 'admin';
+  bool get needsSetup => mustChangePassword || !securityQuestionsSet;
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> map) {
     return AppUser(
@@ -24,6 +31,9 @@ class AppUser {
       email: map['email'] as String? ?? '',
       role: map['role'] as String? ?? 'student',
       active: map['active'] as bool? ?? false,
+      username: map['username'] as String? ?? '',
+      mustChangePassword: map['mustChangePassword'] as bool? ?? false,
+      securityQuestionsSet: map['securityQuestionsSet'] as bool? ?? false,
     );
   }
 }

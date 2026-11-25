@@ -33,7 +33,7 @@ class LessonsPage extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text(
-                  'Add an active student, instructor and vehicle before booking a lesson.')),
+                  'Add an active student, instructor and vehicle before booking a lesson.',),),
         );
       }
       return;
@@ -69,11 +69,11 @@ class LessonsPage extends ConsumerWidget {
                           .map((item) => DropdownMenuItem(
                                 value: item,
                                 child: Text(item.name,
-                                    overflow: TextOverflow.ellipsis),
-                              ))
+                                    overflow: TextOverflow.ellipsis,),
+                              ),)
                           .toList(),
                       onChanged: (value) => setDialogState(
-                          () => selectedStudent = value ?? selectedStudent),
+                          () => selectedStudent = value ?? selectedStudent,),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<Instructor>(
@@ -85,11 +85,11 @@ class LessonsPage extends ConsumerWidget {
                           .map((item) => DropdownMenuItem(
                                 value: item,
                                 child: Text(item.name,
-                                    overflow: TextOverflow.ellipsis),
-                              ))
+                                    overflow: TextOverflow.ellipsis,),
+                              ),)
                           .toList(),
                       onChanged: (value) => setDialogState(() =>
-                          selectedInstructor = value ?? selectedInstructor),
+                          selectedInstructor = value ?? selectedInstructor,),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<SchoolVehicle>(
@@ -101,11 +101,11 @@ class LessonsPage extends ConsumerWidget {
                                 value: item,
                                 child: Text(
                                     '${item.registrationNumber} • ${item.makeModel}',
-                                    overflow: TextOverflow.ellipsis),
-                              ))
+                                    overflow: TextOverflow.ellipsis,),
+                              ),)
                           .toList(),
                       onChanged: (value) => setDialogState(
-                          () => selectedVehicle = value ?? selectedVehicle),
+                          () => selectedVehicle = value ?? selectedVehicle,),
                     ),
                     const SizedBox(height: 12),
                     ListTile(
@@ -123,8 +123,9 @@ class LessonsPage extends ConsumerWidget {
                             lastDate:
                                 DateTime.now().add(const Duration(days: 365)),
                           );
-                          if (picked != null)
+                          if (picked != null) {
                             setDialogState(() => selectedDate = picked);
+                          }
                         },
                       ),
                     ),
@@ -136,9 +137,10 @@ class LessonsPage extends ConsumerWidget {
                         icon: const Icon(Icons.schedule),
                         onPressed: () async {
                           final picked = await showTimePicker(
-                              context: context, initialTime: selectedTime);
-                          if (picked != null)
+                              context: context, initialTime: selectedTime,);
+                          if (picked != null) {
                             setDialogState(() => selectedTime = picked);
+                          }
                         },
                       ),
                     ),
@@ -149,7 +151,7 @@ class LessonsPage extends ConsumerWidget {
                           .map((value) => DropdownMenuItem(
                                 value: value,
                                 child: Text('$value minutes'),
-                              ))
+                              ),)
                           .toList(),
                       onChanged: (value) =>
                           setDialogState(() => duration = value ?? 60),
@@ -183,7 +185,7 @@ class LessonsPage extends ConsumerWidget {
                 if (start.isBefore(DateTime.now())) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Choose a future lesson time.')),
+                        content: Text('Choose a future lesson time.'),),
                   );
                   return;
                 }
@@ -253,8 +255,9 @@ class LessonsPage extends ConsumerWidget {
         error: (error, stack) =>
             Center(child: Text('Unable to load lessons: $error')),
         data: (lessons) {
-          if (lessons.isEmpty)
+          if (lessons.isEmpty) {
             return const Center(child: Text('No lessons scheduled yet.'));
+          }
           return ListView.separated(
             padding: const EdgeInsets.all(20),
             itemCount: lessons.length,
@@ -267,7 +270,7 @@ class LessonsPage extends ConsumerWidget {
                   leading:
                       const CircleAvatar(child: Icon(Icons.drive_eta_rounded)),
                   title: Text(
-                      '${lesson.studentName} • ${lesson.vehicleRegistration}'),
+                      '${lesson.studentName} • ${lesson.vehicleRegistration}',),
                   subtitle: Text(
                     '${DateFormat.yMMMd().add_jm().format(lesson.startAt)}'
                     ' • ${lesson.durationMinutes} min\nInstructor: ${lesson.instructorName}'
@@ -282,11 +285,11 @@ class LessonsPage extends ConsumerWidget {
                               .updateStatus(lesson.id, value),
                           itemBuilder: (_) => const [
                             PopupMenuItem(
-                                value: 'scheduled', child: Text('Scheduled')),
+                                value: 'scheduled', child: Text('Scheduled'),),
                             PopupMenuItem(
-                                value: 'completed', child: Text('Completed')),
+                                value: 'completed', child: Text('Completed'),),
                             PopupMenuItem(
-                                value: 'cancelled', child: Text('Cancelled')),
+                                value: 'cancelled', child: Text('Cancelled'),),
                           ],
                           child: Chip(label: Text(lesson.status)),
                         )

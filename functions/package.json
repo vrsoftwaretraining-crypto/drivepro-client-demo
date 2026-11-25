@@ -3,7 +3,8 @@
   "scripts": {
     "build": "tsc",
     "deploy": "firebase deploy --only functions",
-    "lint": "echo Configure linting separately"
+    "lint": "npm run typecheck",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": "20"

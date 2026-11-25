@@ -24,7 +24,7 @@ class EnquiriesPage extends ConsumerWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
-                child: Text('Unable to load enquiries: ${snapshot.error}'));
+                child: Text('Unable to load enquiries: ${snapshot.error}'),);
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -33,16 +33,16 @@ class EnquiriesPage extends ConsumerWidget {
           final pending = docs
               .where((doc) =>
                   (doc.data()['followUpStatus'] as String? ?? 'pending') ==
-                  'pending')
+                  'pending',)
               .length;
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
               Text('Call enquiries',
-                  style: Theme.of(context).textTheme.headlineSmall),
+                  style: Theme.of(context).textTheme.headlineSmall,),
               const SizedBox(height: 6),
               const Text(
-                  'Missed calls received on your DrivePro business number.'),
+                  'Missed calls received on your DrivePro business number.',),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 12,
@@ -51,11 +51,11 @@ class EnquiriesPage extends ConsumerWidget {
                   _MetricCard(
                       label: 'Total enquiries',
                       value: '${docs.length}',
-                      icon: Icons.call),
+                      icon: Icons.call,),
                   _MetricCard(
                       label: 'Pending follow-ups',
                       value: '$pending',
-                      icon: Icons.pending_actions),
+                      icon: Icons.pending_actions,),
                 ],
               ),
               const SizedBox(height: 16),
@@ -64,8 +64,8 @@ class EnquiriesPage extends ConsumerWidget {
                     child: Padding(
                   padding: EdgeInsets.all(24),
                   child: Text(
-                      'No call enquiries yet. Connect your cloud telephony webhook to start receiving calls.'),
-                ))
+                      'No call enquiries yet. Connect your cloud telephony webhook to start receiving calls.',),
+                ),)
               else
                 ...docs.map((doc) => _EnquiryTile(
                       data: doc.data(),
@@ -77,7 +77,7 @@ class EnquiriesPage extends ConsumerWidget {
                         'followUpNotes': notes,
                         'updatedAt': FieldValue.serverTimestamp(),
                       }),
-                    )),
+                    ),),
             ],
           );
         },
@@ -88,7 +88,7 @@ class EnquiriesPage extends ConsumerWidget {
 
 class _MetricCard extends StatelessWidget {
   const _MetricCard(
-      {required this.label, required this.value, required this.icon});
+      {required this.label, required this.value, required this.icon,});
   final String label;
   final String value;
   final IconData icon;
@@ -105,9 +105,9 @@ class _MetricCard extends StatelessWidget {
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(value, style: Theme.of(context).textTheme.headlineSmall),
               Text(label),
-            ]),
-          ]),
-        )),
+            ],),
+          ],),
+        ),),
       );
 }
 
@@ -141,8 +141,8 @@ class _EnquiryTile extends StatelessWidget {
                     children: [
                   Text(phone, style: Theme.of(context).textTheme.titleMedium),
                   Text(
-                      '$callStatus${receivedAt == null ? '' : ' • ${MaterialLocalizations.of(context).formatMediumDate(receivedAt)} ${TimeOfDay.fromDateTime(receivedAt).format(context)}'}'),
-                ])),
+                      '$callStatus${receivedAt == null ? '' : ' • ${MaterialLocalizations.of(context).formatMediumDate(receivedAt)} ${TimeOfDay.fromDateTime(receivedAt).format(context)}'}',),
+                ],),),
             PopupMenuButton<String>(
               initialValue: status,
               onSelected: onStatusChanged,
@@ -151,12 +151,20 @@ class _EnquiryTile extends StatelessWidget {
                 PopupMenuItem(value: 'contacted', child: Text('Contacted')),
                 PopupMenuItem(value: 'converted', child: Text('Converted')),
                 PopupMenuItem(
-                    value: 'not_interested', child: Text('Not interested')),
+                    value: 'not_interested', child: Text('Not interested'),),
               ],
               child: Chip(label: Text(status.replaceAll('_', ' '))),
             ),
-          ]),
+          ],),
           const SizedBox(height: 8),
+          if ((data['callerName'] as String? ?? '').isNotEmpty)
+            Text('Name: ${data['callerName']}'),
+          if ((data['instructorName'] as String? ?? '').isNotEmpty)
+            Text('Instructor: ${data['instructorName']}'),
+          if ((data['slotLabel'] as String? ?? '').isNotEmpty)
+            Text('Slot: ${data['slotLabel']}'),
+          if ((data['message'] as String? ?? '').isNotEmpty)
+            Text('Message: ${data['message']}'),
           Text('SMS: ${data['smsStatus'] ?? 'not sent'}'),
           if ((data['followUpNotes'] as String? ?? '').isNotEmpty)
             Padding(
@@ -171,7 +179,7 @@ class _EnquiryTile extends StatelessWidget {
               label: const Text('Add follow-up note'),
             ),
           ),
-        ]),
+        ],),
       ),
     );
   }
@@ -187,15 +195,15 @@ class _EnquiryTile extends StatelessWidget {
             controller: controller,
             maxLines: 3,
             decoration: const InputDecoration(
-                hintText: 'Customer requirement / next follow-up')),
+                hintText: 'Customer requirement / next follow-up',),),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel')),
+              child: const Text('Cancel'),),
           FilledButton(
               onPressed: () =>
                   Navigator.pop(dialogContext, controller.text.trim()),
-              child: const Text('Save')),
+              child: const Text('Save'),),
         ],
       ),
     );

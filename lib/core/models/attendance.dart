@@ -11,7 +11,9 @@ class LessonAttendance {
       required this.instructorName,
       required this.lessonAt,
       required this.status,
-      this.notes = ''});
+      this.notes = '',
+      this.studentUserId = '',
+      this.instructorUserId = '',});
   final String id,
       lessonId,
       studentId,
@@ -19,6 +21,7 @@ class LessonAttendance {
       instructorName,
       status,
       notes;
+  final String studentUserId, instructorUserId;
   final DateTime lessonAt;
   factory LessonAttendance.fromMap(String id, Map<String, dynamic> map) =>
       LessonAttendance(
@@ -29,7 +32,9 @@ class LessonAttendance {
           instructorName: map['instructorName'] as String? ?? '',
           lessonAt: (map['lessonAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
           status: map['status'] as String? ?? 'present',
-          notes: map['notes'] as String? ?? '');
+          notes: map['notes'] as String? ?? '',
+          studentUserId: map['studentUserId'] as String? ?? '',
+          instructorUserId: map['instructorUserId'] as String? ?? '',);
   Map<String, dynamic> toMap() => {
         'lessonId': lessonId,
         'studentId': studentId,
@@ -38,6 +43,8 @@ class LessonAttendance {
         'lessonAt': Timestamp.fromDate(lessonAt),
         'status': status,
         'notes': notes,
-        'updatedAt': FieldValue.serverTimestamp()
+        'studentUserId': studentUserId,
+        'instructorUserId': instructorUserId,
+        'updatedAt': FieldValue.serverTimestamp(),
       };
 }

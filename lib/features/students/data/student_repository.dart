@@ -17,7 +17,7 @@ class StudentRepository {
     return _students.orderBy('createdAt', descending: true).snapshots().map(
         (snapshot) => snapshot.docs
             .map((doc) => Student.fromMap(doc.id, doc.data()))
-            .toList());
+            .toList(),);
   }
 
   Future<void> addStudent(Student student) => AppExceptionHandler.guard(
