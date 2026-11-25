@@ -22,24 +22,24 @@ class AttendancePage extends ConsumerWidget {
               Row(children: [
                 Expanded(
                     child: Text('Lesson attendance',
-                        style: Theme.of(context).textTheme.headlineSmall)),
+                        style: Theme.of(context).textTheme.headlineSmall,),),
                 FilledButton.icon(
                     onPressed: () => lessons.when(
                         data: (items) => showDialog(
                             context: context,
-                            builder: (_) => _AttendanceDialog(lessons: items)),
+                            builder: (_) => _AttendanceDialog(lessons: items),),
                         error: (e, _) => ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text('$e'))),
-                        loading: () => null),
+                        loading: () {},),
                     icon: const Icon(Icons.fact_check),
-                    label: const Text('Mark attendance'))
-              ]),
+                    label: const Text('Mark attendance'),),
+              ],),
               const SizedBox(height: 12),
               Expanded(
                   child: records.when(
                       data: (items) => items.isEmpty
                           ? const Center(
-                              child: Text('No attendance records yet.'))
+                              child: Text('No attendance records yet.'),)
                           : ListView.separated(
                               itemCount: items.length,
                               separatorBuilder: (_, __) => const Divider(),
@@ -54,16 +54,16 @@ class AttendancePage extends ConsumerWidget {
                                     leading: Icon(Icons.person, color: color),
                                     title: Text(a.studentName),
                                     subtitle: Text(
-                                        '${DateFormat.yMMMd().add_jm().format(a.lessonAt)} • ${a.instructorName}'),
+                                        '${DateFormat.yMMMd().add_jm().format(a.lessonAt)} • ${a.instructorName}',),
                                     trailing: Chip(
                                         label: Text(a.status.toUpperCase()),
-                                        side: BorderSide(color: color)));
-                              }),
+                                        side: BorderSide(color: color),),);
+                              },),
                       error: (e, _) =>
                           Center(child: Text('Could not load attendance: $e')),
                       loading: () =>
-                          const Center(child: CircularProgressIndicator())))
-            ])));
+                          const Center(child: CircularProgressIndicator()),),),
+            ],),),);
   }
 }
 
@@ -108,31 +108,31 @@ class _AttendanceDialogState extends ConsumerState<_AttendanceDialog> {
                           value: l.id,
                           child: Text(
                               '${l.studentName} • ${DateFormat.yMMMd().add_jm().format(l.startAt)}',
-                              overflow: TextOverflow.ellipsis)))
+                              overflow: TextOverflow.ellipsis,),),)
                       .toList(),
-                  onChanged: (v) => setState(() => lessonId = v)),
+                  onChanged: (v) => setState(() => lessonId = v),),
               DropdownButtonFormField<String>(
                   initialValue: status,
                   decoration: const InputDecoration(labelText: 'Status'),
                   items: const ['present', 'absent', 'late']
                       .map((v) => DropdownMenuItem(
-                          value: v, child: Text(v.toUpperCase())))
+                          value: v, child: Text(v.toUpperCase()),),)
                       .toList(),
-                  onChanged: (v) => setState(() => status = v ?? 'present')),
+                  onChanged: (v) => setState(() => status = v ?? 'present'),),
               TextField(
                   controller: notes,
-                  decoration: const InputDecoration(labelText: 'Notes'))
-            ])),
+                  decoration: const InputDecoration(labelText: 'Notes'),),
+            ],),),
         actions: [
           TextButton(
               onPressed: saving ? null : () => Navigator.pop(context),
-              child: const Text('Cancel')),
+              child: const Text('Cancel'),),
           FilledButton(
               onPressed: saving || lesson == null ? null : _save,
               child: saving
                   ? const CircularProgressIndicator()
-                  : const Text('Save'))
-        ]);
+                  : const Text('Save'),),
+        ],);
   }
 
   Future<void> _save() async {
@@ -148,12 +148,15 @@ class _AttendanceDialogState extends ConsumerState<_AttendanceDialog> {
           instructorName: l.instructorName,
           lessonAt: l.startAt,
           status: status,
-          notes: notes.text));
+          notes: notes.text,
+          studentUserId: l.studentUserId.isNotEmpty ? l.studentUserId : l.studentId,
+          instructorUserId: l.instructorUserId.isNotEmpty ? l.instructorUserId : l.instructorId,),);
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('$e')));
+      }
     } finally {
       if (mounted) setState(() => saving = false);
     }

@@ -17,7 +17,13 @@ import '../../reports/presentation/reports_page.dart';
 import '../../certificates/presentation/certificates_page.dart';
 import '../../reminders/presentation/reminders_page.dart';
 import '../../settings/presentation/school_settings_page.dart';
+import '../../settings/presentation/slot_settings_page.dart';
+import '../../admin/presentation/admin_accounts_page.dart';
+import '../../call_automation/presentation/call_autoreply_page.dart';
+import '../../auth/presentation/security_questions_form.dart';
 import '../../call_automation/presentation/enquiries_page.dart';
+import '../../booking/presentation/booking_requests_page.dart';
+import 'role_portal_page.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({required this.user, super.key});
@@ -36,6 +42,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.user.role == 'student' || widget.user.role == 'instructor') {
+      return RolePortalPage(user: widget.user);
+    }
+
     final width = MediaQuery.sizeOf(context).width;
     final isWide = width >= 900;
     final labels = [
@@ -52,6 +62,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       _isTelugu ? 'రిమైండర్లు' : 'Reminders',
       _isTelugu ? 'స్కూల్ సెట్టింగ్స్' : 'School Settings',
       _isTelugu ? 'కాల్ ఎంక్వైరీలు' : 'Call Enquiries',
+      _isTelugu ? 'బుకింగ్ అభ్యర్థనలు' : 'Booking Requests',
+      _isTelugu ? 'స్లాట్ సెట్టింగ్స్' : 'Slot Settings',
+      _isTelugu ? 'అడ్మిన్ ఖాతాలు' : 'Admin Accounts',
+      _isTelugu ? 'ఆటో SMS' : 'Auto SMS (Phone)',
     ];
     final icons = [
       Icons.dashboard_rounded,
@@ -67,6 +81,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       Icons.notifications_active_rounded,
       Icons.settings_rounded,
       Icons.phone_callback_rounded,
+      Icons.how_to_reg_rounded,
+      Icons.schedule_rounded,
+      Icons.admin_panel_settings_rounded,
+      Icons.sms_rounded,
     ];
 
     final pages = [
@@ -83,17 +101,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       const RemindersPage(),
       const SchoolSettingsPage(),
       const EnquiriesPage(),
+      const BookingRequestsPage(),
+      const SlotSettingsPage(),
+      const AdminAccountsPage(),
+      const CallAutoReplyPage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.directions_car_filled_rounded,
-                color: AppTheme.primary),
-            const SizedBox(width: 10),
-            const Text('DrivePro',
-                style: TextStyle(fontWeight: FontWeight.w800)),
+            Icon(Icons.directions_car_filled_rounded,
+                color: AppTheme.primary,),
+            SizedBox(width: 10),
+            Text('DrivePro',
+                style: TextStyle(fontWeight: FontWeight.w800),),
           ],
         ),
         actions: [
@@ -112,6 +134,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             ),
           ),
           IconButton(
+            tooltip: 'Security questions',
+            onPressed: () => showSecurityQuestionsDialog(context),
+            icon: const Icon(Icons.shield_outlined),
+          ),
+          IconButton(
             tooltip: 'Sign out',
             onPressed: () => ref.read(firebaseAuthProvider).signOut(),
             icon: const Icon(Icons.logout_rounded),
@@ -123,8 +150,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 itemBuilder: (context) => List.generate(
                     labels.length,
                     (index) => PopupMenuItem<int>(
-                        value: index, child: Text(labels[index]))),
-                icon: const Icon(Icons.apps_rounded)),
+                        value: index, child: Text(labels[index]),),),
+                icon: const Icon(Icons.apps_rounded),),
           const SizedBox(width: 8),
         ],
       ),
@@ -199,7 +226,7 @@ class _OverviewPage extends StatelessWidget {
         children: [
           Text(strings.welcome,
               style: theme.textTheme.headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.w800)),
+                  ?.copyWith(fontWeight: FontWeight.w800),),
           const SizedBox(height: 8),
           Text(strings.overview, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 26),
@@ -232,7 +259,7 @@ class _OverviewPage extends StatelessWidget {
                           Icon(item.$3, color: item.$4, size: 28),
                           Text(item.$2,
                               style: theme.textTheme.headlineMedium
-                                  ?.copyWith(fontWeight: FontWeight.w800)),
+                                  ?.copyWith(fontWeight: FontWeight.w800),),
                           Text(item.$1, style: theme.textTheme.titleSmall),
                         ],
                       ),
@@ -251,7 +278,7 @@ class _OverviewPage extends StatelessWidget {
                 children: [
                   Text(strings.recentActivity,
                       style: theme.textTheme.titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                          ?.copyWith(fontWeight: FontWeight.bold),),
                   const SizedBox(height: 16),
                   const ListTile(
                     leading:
@@ -290,7 +317,7 @@ class _ComingSoonPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.construction_rounded,
-              size: 52, color: AppTheme.primary),
+              size: 52, color: AppTheme.primary,),
           const SizedBox(height: 12),
           Text(title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 6),

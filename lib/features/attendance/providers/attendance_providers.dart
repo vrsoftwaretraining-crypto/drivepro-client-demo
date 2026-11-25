@@ -8,4 +8,4 @@ import '../data/attendance_repository.dart';
 final attendanceRepositoryProvider =
     Provider((ref) => AttendanceRepository(ref.watch(firestoreProvider)));
 final attendanceProvider = StreamProvider<List<LessonAttendance>>(
-    (ref) => ref.watch(attendanceRepositoryProvider).watch());
+    (ref) => ref.watch(attendanceRepositoryProvider).watch(),);

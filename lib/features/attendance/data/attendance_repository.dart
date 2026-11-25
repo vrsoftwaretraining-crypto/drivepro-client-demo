@@ -16,7 +16,7 @@ class AttendanceRepository {
       .snapshots()
       .map((snapshot) => snapshot.docs
           .map((doc) => LessonAttendance.fromMap(doc.id, doc.data()))
-          .toList());
+          .toList(),);
 
   Future<void> save(LessonAttendance item) => AppExceptionHandler.guard(
         'Unable to save attendance',

@@ -8,4 +8,4 @@ import '../data/payment_repository.dart';
 final paymentRepositoryProvider =
     Provider((ref) => PaymentRepository(ref.watch(firestoreProvider)));
 final paymentsProvider = StreamProvider<List<FeePayment>>(
-    (ref) => ref.watch(paymentRepositoryProvider).watchPayments());
+    (ref) => ref.watch(paymentRepositoryProvider).watchPayments(),);

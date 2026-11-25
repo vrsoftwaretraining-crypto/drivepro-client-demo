@@ -11,11 +11,19 @@ class InstructorsPage extends ConsumerWidget {
   const InstructorsPage({super.key});
 
   Future<void> _openForm(BuildContext context, WidgetRef ref,
-      {Instructor? current}) async {
+      {Instructor? current,}) async {
     final name = TextEditingController(text: current?.name ?? '');
     final phone = TextEditingController(text: current?.phone ?? '');
     final email = TextEditingController(text: current?.email ?? '');
     final license = TextEditingController(text: current?.licenseNumber ?? '');
+    final photoUrl = TextEditingController(text: current?.photoUrl ?? '');
+    final bio = TextEditingController(text: current?.bio ?? '');
+    final experience = TextEditingController(text: '${current?.experienceYears ?? 0}');
+    final trained = TextEditingController(text: '${current?.studentsTrained ?? 0}');
+    final achievements = TextEditingController(text: current?.achievements ?? '');
+    final vehicleId = TextEditingController(text: current?.assignedVehicleId ?? '');
+    final days = TextEditingController(text: current?.workingDays.join(', ') ?? '');
+    final hours = TextEditingController(text: current?.workingHours ?? '');
     final formKey = GlobalKey<FormState>();
 
     final result = await showDialog<Instructor>(
@@ -34,6 +42,14 @@ class InstructorsPage extends ConsumerWidget {
                   _input(phone, 'Phone number'),
                   _input(email, 'Email address', required: false),
                   _input(license, 'Driving licence number', required: false),
+                  _input(photoUrl, 'Public profile photo URL (HTTPS)', required: false),
+                  _input(bio, 'Public profile / experience', required: false),
+                  _input(experience, 'Experience (years)', required: false),
+                  _input(trained, 'Number of students trained', required: false),
+                  _input(achievements, 'Achievements (public)', required: false),
+                  _input(vehicleId, 'Assigned vehicle document ID', required: false),
+                  _input(days, 'Working days (comma separated)', required: false),
+                  _input(hours, 'Working hours', required: false),
                 ],
               ),
             ),
@@ -55,6 +71,14 @@ class InstructorsPage extends ConsumerWidget {
                   phone: phone.text,
                   email: email.text,
                   licenseNumber: license.text,
+                  photoUrl: photoUrl.text,
+                  bio: bio.text,
+                  experienceYears: int.tryParse(experience.text.trim()) ?? 0,
+                  studentsTrained: int.tryParse(trained.text.trim()) ?? 0,
+                  achievements: achievements.text,
+                  assignedVehicleId: vehicleId.text,
+                  workingDays: days.text.split(',').map((value) => value.trim()).where((value) => value.isNotEmpty).toList(),
+                  workingHours: hours.text,
                   active: current?.active ?? true,
                 ),
               );
@@ -69,6 +93,14 @@ class InstructorsPage extends ConsumerWidget {
     phone.dispose();
     email.dispose();
     license.dispose();
+    photoUrl.dispose();
+    bio.dispose();
+    experience.dispose();
+    trained.dispose();
+    achievements.dispose();
+    vehicleId.dispose();
+    days.dispose();
+    hours.dispose();
 
     if (result == null) return;
     final repository = ref.read(instructorRepositoryProvider);
@@ -88,7 +120,7 @@ class InstructorsPage extends ConsumerWidget {
   }
 
   static Widget _input(TextEditingController controller, String label,
-      {bool required = true}) {
+      {bool required = true,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
@@ -139,11 +171,12 @@ class InstructorsPage extends ConsumerWidget {
               final item = items[index];
               return Card(
                 child: ListTile(
-                  leading:
-                      const CircleAvatar(child: Icon(Icons.badge_outlined)),
+                  leading: item.photoUrl.isEmpty
+                      ? const CircleAvatar(child: Icon(Icons.badge_outlined))
+                      : CircleAvatar(backgroundImage: NetworkImage(item.photoUrl)),
                   title: Text(item.name),
                   subtitle: Text(
-                      '${item.phone}  •  ${item.email}\nLicence: ${item.licenseNumber.isEmpty ? 'Not provided' : item.licenseNumber}'),
+                      '${item.phone}  •  ${item.email}\nLicence: ${item.licenseNumber.isEmpty ? 'Not provided' : item.licenseNumber}',),
                   isThreeLine: true,
                   trailing: canManage
                       ? PopupMenuButton<String>(
@@ -159,7 +192,7 @@ class InstructorsPage extends ConsumerWidget {
                           itemBuilder: (_) => const [
                             PopupMenuItem(value: 'edit', child: Text('Edit')),
                             PopupMenuItem(
-                                value: 'archive', child: Text('Archive')),
+                                value: 'archive', child: Text('Archive'),),
                           ],
                         )
                       : Chip(label: Text(item.active ? 'Active' : 'Archived')),

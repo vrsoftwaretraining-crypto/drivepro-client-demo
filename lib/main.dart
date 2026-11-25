@@ -5,12 +5,12 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'core/errors/startup_error_app.dart';
 import 'core/logging/app_logger.dart';
+import 'core/services/emulator.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -41,6 +41,8 @@ Future<void> main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+
+      connectEmulators(Firebase.app());
 
       AppLogger.info('Firebase initialized successfully');
 

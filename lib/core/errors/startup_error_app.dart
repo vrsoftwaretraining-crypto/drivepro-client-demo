@@ -30,7 +30,7 @@ class _StartupErrorAppState extends State<StartupErrorApp> {
       runApp(const ProviderScope(child: DriveProApp()));
     } catch (error, stack) {
       AppLogger.error('Firebase initialization retry failed',
-          error: error, stackTrace: stack);
+          error: error, stackTrace: stack,);
       if (mounted) setState(() => _retrying = false);
     }
   }

@@ -25,21 +25,24 @@ class RemindersPage extends ConsumerWidget {
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: stream,
         builder: (context, snapshot) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Center(
-                child: Text('Unable to load reminders: ${snapshot.error}'));
-          if (!snapshot.hasData)
+                child: Text('Unable to load reminders: ${snapshot.error}'),);
+          }
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final docs = snapshot.data!.docs;
-          if (docs.isEmpty)
+          if (docs.isEmpty) {
             return const Center(
                 child: Text(
-                    'No reminders yet. Add a reminder for a lesson, payment or vehicle document.'));
+                    'No reminders yet. Add a reminder for a lesson, payment or vehicle document.',),);
+          }
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
             children: [
               Text('Reminders',
-                  style: Theme.of(context).textTheme.headlineSmall),
+                  style: Theme.of(context).textTheme.headlineSmall,),
               const SizedBox(height: 12),
               ...docs.map((doc) {
                 final data = doc.data();
@@ -59,10 +62,10 @@ class RemindersPage extends ConsumerWidget {
                       data['details'] as String? ?? '',
                       if (dueAt != null)
                         'Due: ${MaterialLocalizations.of(context).formatMediumDate(dueAt)}',
-                    ].where((item) => item.isNotEmpty).join('\n')),
+                    ].where((item) => item.isNotEmpty).join('\n'),),
                     secondary: Icon(done
                         ? Icons.check_circle
-                        : Icons.notifications_active_outlined),
+                        : Icons.notifications_active_outlined,),
                     controlAffinity: ListTileControlAffinity.leading,
                   ),
                 );
@@ -110,7 +113,7 @@ class RemindersPage extends ConsumerWidget {
                   builder: (context, date, _) => OutlinedButton.icon(
                     icon: const Icon(Icons.calendar_today),
                     label: Text(
-                        'Due: ${MaterialLocalizations.of(context).formatMediumDate(date)}'),
+                        'Due: ${MaterialLocalizations.of(context).formatMediumDate(date)}',),
                     onPressed: () async {
                       final picked = await showDatePicker(
                         context: dialogContext,
@@ -134,7 +137,7 @@ class RemindersPage extends ConsumerWidget {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel')),
+              child: const Text('Cancel'),),
           FilledButton(
             onPressed: () async {
               if (!formKey.currentState!.validate()) return;
@@ -151,7 +154,7 @@ class RemindersPage extends ConsumerWidget {
               } catch (error) {
                 if (dialogContext.mounted) {
                   ScaffoldMessenger.of(dialogContext).showSnackBar(SnackBar(
-                      content: Text('Could not save reminder: $error')));
+                      content: Text('Could not save reminder: $error'),),);
                 }
               }
             },

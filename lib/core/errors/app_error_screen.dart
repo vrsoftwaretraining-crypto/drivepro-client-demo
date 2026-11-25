@@ -23,7 +23,7 @@ class AppErrorScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text('Unable to start DrivePro',
                     style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center),
+                    textAlign: TextAlign.center,),
                 const SizedBox(height: 10),
                 Text(
                   'The app could not connect to its required services. Check your connection and try again.',

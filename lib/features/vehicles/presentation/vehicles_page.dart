@@ -12,9 +12,10 @@ class VehiclesPage extends ConsumerWidget {
   const VehiclesPage({super.key});
 
   Future<void> _openForm(BuildContext context, WidgetRef ref,
-      {SchoolVehicle? current}) async {
+      {SchoolVehicle? current,}) async {
     final reg = TextEditingController(text: current?.registrationNumber ?? '');
     final model = TextEditingController(text: current?.makeModel ?? '');
+    final photoUrl = TextEditingController(text: current?.photoUrl ?? '');
     String transmission = current?.transmission ?? 'Manual';
     String fuel = current?.fuelType ?? 'Petrol';
     DateTime? insurance = current?.insuranceExpiry;
@@ -37,7 +38,7 @@ class VehiclesPage extends ConsumerWidget {
                     TextFormField(
                       controller: reg,
                       decoration: const InputDecoration(
-                          labelText: 'Registration number'),
+                          labelText: 'Registration number',),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
                               ? 'Registration number is required.'
@@ -54,18 +55,23 @@ class VehiclesPage extends ConsumerWidget {
                               : null,
                     ),
                     const SizedBox(height: 12),
+                    TextFormField(
+                      controller: photoUrl,
+                      decoration: const InputDecoration(labelText: 'Public vehicle photo URL (HTTPS)'),
+                    ),
+                    const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: transmission,
                       decoration:
                           const InputDecoration(labelText: 'Transmission'),
                       items: const [
                         DropdownMenuItem(
-                            value: 'Manual', child: Text('Manual')),
+                            value: 'Manual', child: Text('Manual'),),
                         DropdownMenuItem(
-                            value: 'Automatic', child: Text('Automatic')),
+                            value: 'Automatic', child: Text('Automatic'),),
                       ],
                       onChanged: (value) => setDialogState(
-                          () => transmission = value ?? 'Manual'),
+                          () => transmission = value ?? 'Manual',),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
@@ -73,7 +79,7 @@ class VehiclesPage extends ConsumerWidget {
                       decoration: const InputDecoration(labelText: 'Fuel type'),
                       items: const ['Petrol', 'Diesel', 'CNG', 'Electric']
                           .map((value) => DropdownMenuItem(
-                              value: value, child: Text(value)))
+                              value: value, child: Text(value),),)
                           .toList(),
                       onChanged: (value) =>
                           setDialogState(() => fuel = value ?? 'Petrol'),
@@ -111,6 +117,7 @@ class VehiclesPage extends ConsumerWidget {
                     fuelType: fuel,
                     insuranceExpiry: insurance,
                     fcExpiry: fc,
+                    photoUrl: photoUrl.text,
                     active: current?.active ?? true,
                   ),
                 );
@@ -124,6 +131,7 @@ class VehiclesPage extends ConsumerWidget {
 
     reg.dispose();
     model.dispose();
+    photoUrl.dispose();
     if (result == null) return;
 
     final repository = ref.read(vehicleRepositoryProvider);
@@ -193,8 +201,9 @@ class VehiclesPage extends ConsumerWidget {
         error: (error, stack) =>
             Center(child: Text('Unable to load vehicles: $error')),
         data: (items) {
-          if (items.isEmpty)
+          if (items.isEmpty) {
             return const Center(child: Text('No vehicles registered yet.'));
+          }
           return ListView.separated(
             padding: const EdgeInsets.all(20),
             itemCount: items.length,
@@ -203,8 +212,9 @@ class VehiclesPage extends ConsumerWidget {
               final vehicle = items[index];
               return Card(
                 child: ListTile(
-                  leading: const CircleAvatar(
-                      child: Icon(Icons.directions_car_filled_outlined)),
+                  leading: vehicle.photoUrl.isEmpty
+                      ? const CircleAvatar(child: Icon(Icons.directions_car_filled_outlined))
+                      : CircleAvatar(backgroundImage: NetworkImage(vehicle.photoUrl)),
                   title: Text(vehicle.registrationNumber),
                   subtitle: Text(
                     '${vehicle.makeModel} • ${vehicle.transmission} • ${vehicle.fuelType}\n'
@@ -226,11 +236,11 @@ class VehiclesPage extends ConsumerWidget {
                           itemBuilder: (_) => const [
                             PopupMenuItem(value: 'edit', child: Text('Edit')),
                             PopupMenuItem(
-                                value: 'archive', child: Text('Archive')),
+                                value: 'archive', child: Text('Archive'),),
                           ],
                         )
                       : Chip(
-                          label: Text(vehicle.active ? 'Active' : 'Archived')),
+                          label: Text(vehicle.active ? 'Active' : 'Archived'),),
                 ),
               );
             },

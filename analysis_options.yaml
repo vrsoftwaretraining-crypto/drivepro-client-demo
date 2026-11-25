@@ -8,6 +8,7 @@ analyzer:
     missing_return: error
   exclude:
     - build/**
+    - web/**
 
 linter:
   rules:

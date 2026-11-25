@@ -28,17 +28,78 @@ service cloud.firestore {
       return activeUser() && userDoc().role == 'student';
     }
 
+    function validHold() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['instructorId', 'vehicleId', 'startAt', 'durationMinutes',
+                'status', 'holdExpiresAt', 'bookingRequestId', 'kind'])
+        && d.status == 'held'
+        && d.durationMinutes in [60, 90, 120]
+        && d.startAt > request.time
+        // 30 min cap tolerates a phone clock that is a few minutes off.
+        && d.holdExpiresAt <= request.time + duration.value(30, 'm');
+    }
+
     match /users/{userId} {
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
       allow create, update, delete: if isAdmin();
+      // First-run bootstrap: the very first admin can create their own profile
+      // (only while system/bootstrap does not exist yet).
+      allow create: if signedIn() && request.auth.uid == userId
+        && request.resource.data.role == 'admin'
+        && !exists(/databases/$(database)/documents/system/bootstrap);
+      // A user may only finish their own first-login setup.
+      allow update: if signedIn() && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['securityQuestionsSet', 'mustChangePassword', 'updatedAt'])
+        && request.resource.data.mustChangePassword == false
+        && request.resource.data.securityQuestionsSet == true;
+    }
+
+    match /system/{docId} {
+      allow get: if true;
+      allow create: if signedIn() && docId == 'bootstrap'
+        && !exists(/databases/$(database)/documents/system/bootstrap);
+    }
+
+    // username/email -> login email. Public get only (no listing).
+    match /login_index/{key} {
+      allow get: if true;
+      allow create, update, delete: if isAdmin();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && key == request.auth.token.email.lower();
+      allow update: if signedIn() && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    // Salted/iterated hashes of security answers (see docs for the trade-off).
+    match /recovery/{uid} {
+      allow get: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Public-safe mirrors written by admin (no phone / licence data).
+    match /public_instructors/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /public_vehicles/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /public_info/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /students/{studentId} {
-      allow read: if isAdmin() || isInstructor()
+      allow read: if isAdmin()
+        || (isInstructor() && resource.data.assignedInstructorId == request.auth.uid)
         || (isStudent() && resource.data.userId == request.auth.uid);
       allow create, update, delete: if isAdmin();
     }
 
+    // Public website receives a sanitized catalogue from getPublicCatalog.
+    // Keep source records private because they contain instructor contact/licence data.
     match /instructors/{instructorId} {
       allow read: if activeUser();
       allow create, update, delete: if isAdmin();
@@ -50,27 +111,76 @@ service cloud.firestore {
     }
 
     match /lessons/{lessonId} {
-      allow read: if isAdmin() || isInstructor()
+      allow read: if isAdmin()
+        || (isInstructor() && resource.data.instructorId == request.auth.uid)
         || (isStudent() && resource.data.studentUserId == request.auth.uid);
       allow create, update, delete: if isAdmin();
     }
 
     match /payments/{paymentId} {
-      allow read, create, update, delete: if isAdmin();
-    }
-
-    match /attendance/{attendanceId} {
-      allow read: if isAdmin() || isInstructor();
+      allow read: if isAdmin()
+        || (isStudent() && resource.data.studentUserId == request.auth.uid);
       allow create, update, delete: if isAdmin();
     }
 
+    match /attendance/{attendanceId} {
+      allow read: if isAdmin()
+        || (isInstructor() && resource.data.instructorUserId == request.auth.uid)
+        || (isStudent() && resource.data.studentUserId == request.auth.uid);
+      allow create: if isAdmin()
+        || (isInstructor() && request.resource.data.instructorUserId == request.auth.uid);
+      allow update: if isAdmin()
+        || (isInstructor() && resource.data.instructorUserId == request.auth.uid
+            && request.resource.data.instructorUserId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
     match /reminders/{reminderId} {
-      allow read, create, update, delete: if isAdmin();
+      allow read: if isAdmin()
+        || (isStudent() && resource.data.userId == request.auth.uid)
+        || (isInstructor() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
     }
 
     match /call_enquiries/{enquiryId} {
-      allow read, update: if isAdmin();
-      allow create, delete: if false; // Created by trusted Cloud Functions only.
+      allow read, update, create: if isAdmin(); // admin phone syncs auto-reply log rows
+      allow delete: if false;
+      // Public "call me back" form (web_enquiry) – validated, size-limited.
+      allow create: if request.resource.data.source == 'web_enquiry'
+        && request.resource.data.keys().hasOnly(['source', 'callerName', 'phoneNumber',
+            'callStatus', 'smsStatus', 'instructorId', 'instructorName', 'slotLabel',
+            'message', 'followUpStatus', 'receivedAt'])
+        && request.resource.data.callerName is string && request.resource.data.callerName.size() <= 100
+        && request.resource.data.phoneNumber is string && request.resource.data.phoneNumber.size() <= 20
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.receivedAt == request.time;
+    }
+
+    match /booking_requests/{requestId} {
+      allow read: if isAdmin()
+        || (activeUser() && resource.data.studentUserId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+      // Public booking request (written in the same transaction as the slot hold).
+      allow create: if request.resource.data.status == 'pending_admin_contact'
+        && request.resource.data.paymentStatus == 'unpaid'
+        && request.resource.data.name is string && request.resource.data.name.size() <= 100
+        && request.resource.data.phone is string && request.resource.data.phone.size() <= 20
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.startAt > request.time;
+    }
+
+    match /booking_slots/{slotId} {
+      allow read: if true; // public slot board (no personal data stored here)
+      allow create, update, delete: if isAdmin();
+      // Public 15-minute hold. An existing slot can be re-held only if its hold expired.
+      allow create: if validHold();
+      allow update: if resource.data.status == 'held'
+        && resource.data.holdExpiresAt < request.time && validHold();
+    }
+
+    // Hashed security answers: only Cloud Functions (Admin SDK) may touch these.
+    match /security_questions/{uid} {
+      allow read, write: if false;
     }
 
     match /school_settings/{settingId} {

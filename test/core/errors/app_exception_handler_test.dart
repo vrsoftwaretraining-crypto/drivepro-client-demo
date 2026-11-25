@@ -6,7 +6,8 @@ void main() {
   tearDown(() => AppLogger.testSink = null);
 
   test('guard returns successful operation result', () async {
-    expect(await AppExceptionHandler.guard<int>('calculate', () async => 42), 42);
+    expect(
+        await AppExceptionHandler.guard<int>('calculate', () async => 42), 42);
   });
 
   test('guard logs and rethrows failures', () async {
@@ -21,6 +22,7 @@ void main() {
       ),
       throwsA(isA<StateError>()),
     );
-    expect(logged, contains('[TestRepository] Save failed: Bad state: offline'));
+    expect(
+        logged, contains('[TestRepository] Save failed: Bad state: offline'));
   });
 }

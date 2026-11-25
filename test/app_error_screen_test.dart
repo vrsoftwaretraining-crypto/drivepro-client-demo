@@ -5,9 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('shows a helpful startup error and retry action', (tester) async {
     var retried = false;
-    await tester.pumpWidget(MaterialApp(
-      home: AppErrorScreen(onRetry: () => retried = true),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AppErrorScreen(onRetry: () => retried = true),
+      ),
+    );
 
     expect(find.text('Unable to start DrivePro'), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);

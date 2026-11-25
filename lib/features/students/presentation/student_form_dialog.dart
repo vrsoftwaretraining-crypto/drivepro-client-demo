@@ -90,10 +90,10 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                 _field(_course, 'Course'),
                 _field(_totalFee, 'Total fee',
                     keyboard:
-                        const TextInputType.numberWithOptions(decimal: true)),
+                        const TextInputType.numberWithOptions(decimal: true),),
                 _field(_paidFee, 'Paid fee',
                     keyboard:
-                        const TextInputType.numberWithOptions(decimal: true)),
+                        const TextInputType.numberWithOptions(decimal: true),),
               ],
             ),
           ),

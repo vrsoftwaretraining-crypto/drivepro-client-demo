@@ -41,11 +41,13 @@ class _SchoolSettingsPageState extends ConsumerState<SchoolSettingsPage> {
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: settingsRef.snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Center(
-                child: Text('Unable to load settings: ${snapshot.error}'));
-          if (!snapshot.hasData)
+                child: Text('Unable to load settings: ${snapshot.error}'),);
+          }
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final data = snapshot.data!.data() ?? <String, dynamic>{};
           if (!_loaded) {
             _name.text = data['schoolName'] as String? ?? '';
@@ -58,10 +60,10 @@ class _SchoolSettingsPageState extends ConsumerState<SchoolSettingsPage> {
             padding: const EdgeInsets.all(20),
             children: [
               Text('School profile & settings',
-                  style: Theme.of(context).textTheme.headlineSmall),
+                  style: Theme.of(context).textTheme.headlineSmall,),
               const SizedBox(height: 8),
               const Text(
-                  'These details can be used on receipts and certificates in a future enhancement.'),
+                  'These details can be used on receipts and certificates in a future enhancement.',),
               const SizedBox(height: 20),
               Form(
                 key: _formKey,
@@ -70,28 +72,28 @@ class _SchoolSettingsPageState extends ConsumerState<SchoolSettingsPage> {
                     TextFormField(
                         controller: _name,
                         decoration: const InputDecoration(
-                            labelText: 'Driving school name'),
+                            labelText: 'Driving school name',),
                         validator: (v) => v == null || v.trim().isEmpty
                             ? 'Enter school name'
-                            : null),
+                            : null,),
                     const SizedBox(height: 12),
                     TextFormField(
                         controller: _phone,
                         decoration:
                             const InputDecoration(labelText: 'Contact phone'),
-                        keyboardType: TextInputType.phone),
+                        keyboardType: TextInputType.phone,),
                     const SizedBox(height: 12),
                     TextFormField(
                         controller: _email,
                         decoration:
                             const InputDecoration(labelText: 'Contact email'),
-                        keyboardType: TextInputType.emailAddress),
+                        keyboardType: TextInputType.emailAddress,),
                     const SizedBox(height: 12),
                     TextFormField(
                         controller: _address,
                         decoration:
                             const InputDecoration(labelText: 'School address'),
-                        maxLines: 3),
+                        maxLines: 3,),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerLeft,
@@ -102,7 +104,7 @@ class _SchoolSettingsPageState extends ConsumerState<SchoolSettingsPage> {
                                 width: 16,
                                 height: 16,
                                 child:
-                                    CircularProgressIndicator(strokeWidth: 2))
+                                    CircularProgressIndicator(strokeWidth: 2),)
                             : const Icon(Icons.save),
                         label: const Text('Save school profile'),
                       ),
@@ -131,14 +133,16 @@ class _SchoolSettingsPageState extends ConsumerState<SchoolSettingsPage> {
         'email': _email.text.trim(),
         'address': _address.text.trim(),
         'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-      if (mounted)
+      }, SetOptions(merge: true),);
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('School profile saved.')));
+            const SnackBar(content: Text('School profile saved.')),);
+      }
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Save failed: $error')));
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
